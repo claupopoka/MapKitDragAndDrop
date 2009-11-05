@@ -31,7 +31,6 @@
 
 @interface MapKitDragAndDropViewController ()
 @property (nonatomic, retain) CLLocationManager *locationManager;
-@property (nonatomic, retain) MKReverseGeocoder *reverseGeocoder;
 @end
 
 
@@ -42,7 +41,6 @@
 
 @synthesize mapView = _mapView;
 @synthesize locationManager = _locationManager;
-@synthesize reverseGeocoder = _reverseGeocoder;
 
 #pragma mark -
 #pragma mark UIViewController overrides
@@ -130,7 +128,6 @@
 
 - (void)dealloc {
 	[_locationManager release], _locationManager = nil;
-	[_reverseGeocoder release], _reverseGeocoder = nil;
     [_mapView release], _mapView = nil;
     [super dealloc];
 }

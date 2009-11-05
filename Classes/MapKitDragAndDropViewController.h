@@ -34,7 +34,6 @@
 @interface MapKitDragAndDropViewController : UIViewController <CLLocationManagerDelegate, MKMapViewDelegate> {
 @private
 	CLLocationManager *_locationManager;
-	MKReverseGeocoder *_reverseGeocoder;
 	MKMapView* _mapView;
 }
 
