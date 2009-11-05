@@ -92,6 +92,13 @@
 	// Dragging annotation will need _mapView to convert new point to coordinate;
 	annotationView.mapView = mapView;
 	
+	UIImageView *leftIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"digdog.png"]];
+	annotationView.leftCalloutAccessoryView = leftIconView;
+	[leftIconView release];
+	
+	UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+	annotationView.rightCalloutAccessoryView = rightButton;		
+	
 	return annotationView;
 }
 
@@ -100,7 +107,7 @@
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
-	if ([control isKindOfClass:[UIButton class]]) {
+	if ([control isKindOfClass:[UIButton class]]) {		
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://hollowout.blogspot.com"]];
 	}
 }

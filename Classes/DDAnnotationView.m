@@ -51,14 +51,7 @@
 		self.enabled = YES;
 		self.canShowCallout = YES;
 		self.multipleTouchEnabled = NO;
-		self.animatesDrop = YES;
-		
-		UIImageView *leftIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"digdog.png"]];
-		self.leftCalloutAccessoryView = leftIconView;
-		[leftIconView release];
-
-        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        self.rightCalloutAccessoryView = rightButton;		
+		self.animatesDrop = YES;		
 	}
 	return self;
 }
@@ -101,8 +94,8 @@
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-
-    if (self.isMoving) {
+	
+    if (self.isMoving) {				
         // Update the map coordinate to reflect the new position.
         CGPoint newCenter = self.center;
         DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
@@ -113,8 +106,8 @@
         // Clean up the state information.
         self.startLocation = CGPointZero;
         self.originalCenter = CGPointZero;
-        self.isMoving = NO;
-    } else {
+        self.isMoving = NO;		
+	} else {
         [super touchesEnded:touches withEvent:event];		
 	}
 }
