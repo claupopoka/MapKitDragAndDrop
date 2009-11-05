@@ -46,9 +46,9 @@
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate title:(NSString*)title {
 	if (self = [super init]) {
-		[self changeCoordinate:coordinate];		
-		self.title = [title retain];
-		self.placemark = nil;
+		[self changeCoordinate:coordinate];
+		_title = [title retain];
+		_placemark = nil;
 	}
 	return self;
 }
@@ -56,13 +56,17 @@
 #pragma mark -
 #pragma mark MKAnnotation Methods
 
+- (NSString *)title {
+	return _title;
+}
+
 - (NSString *)subtitle {
 	NSString* subtitle = nil;
 	
-	if (self.placemark) {
-		subtitle = [[self.placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+	if (_placemark) {
+		subtitle = [[_placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
 	} else {
-		subtitle = [NSString stringWithFormat:@"%lf, %lf", self.coordinate.latitude, self.coordinate.longitude];
+		subtitle = [NSString stringWithFormat:@"%lf, %lf", _coordinate.latitude, _coordinate.longitude];
 	}
 	
 	return subtitle;
@@ -75,30 +79,33 @@
 	_coordinate = coordinate;
 	
 	// Try to reverse geocode here
-	MKReverseGeocoder *reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:self.coordinate];
+	// Note: LLVM/Clang Static analyzer might report potentical leak, but it won't because we release in delegate methods 
+	MKReverseGeocoder *reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:_coordinate];
 	reverseGeocoder.delegate = self;
-	[reverseGeocoder start];	
+	[reverseGeocoder start];
 }
 
 #pragma mark -
 #pragma mark MKReverseGeocoderDelegate methods
 
-- (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)placemark {
-	[self notifyCalloutInfo:placemark];
+- (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)newPlacemark {
+	[self notifyCalloutInfo:newPlacemark];
+	geocoder.delegate = nil;
 	[geocoder release];
 }
 
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFailWithError:(NSError *)error {
 	[self notifyCalloutInfo:nil];
+	geocoder.delegate = nil;
 	[geocoder release];
 }
 
 #pragma mark -
 #pragma mark MKAnnotationView Notification
 
-- (void)notifyCalloutInfo:(MKPlacemark *)placemark {
+- (void)notifyCalloutInfo:(MKPlacemark *)newPlacemark {
 	[self willChangeValueForKey:@"subtitle"]; // Workaround for SDK 3.0, otherwise callout info won't update.
-	self.placemark = placemark;
+	self.placemark = newPlacemark;
 	[self didChangeValueForKey:@"subtitle"]; // Workaround for SDK 3.0, otherwise callout info won't update.
 	
 	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"MKAnnotationCalloutInfoDidChangeNotification" object:self]];
