@@ -49,12 +49,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];	
 
-	self.mapView.showsUserLocation = YES;
+	_mapView.showsUserLocation = YES;
 
 	// Start by locating current position
 	self.locationManager = [[CLLocationManager alloc] init];
-	self.locationManager.delegate = self;
-	[self.locationManager startUpdatingLocation];	
+	_locationManager.delegate = self;
+	[_locationManager startUpdatingLocation];	
 }
 
 #pragma mark -
@@ -64,7 +64,7 @@
 	
 	// Add annotation to map
 	DDAnnotation *annotation = [[DDAnnotation alloc] initWithCoordinate:newLocation.coordinate title:@"Drag to move Pin"];
-	[self.mapView addAnnotation:annotation];
+	[_mapView addAnnotation:annotation];
 	[annotation release];
 
 	// We only update location once, and let users to do the rest of the changes by dragging annotation to place they want
