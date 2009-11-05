@@ -60,7 +60,7 @@
 	NSString* subtitle = nil;
 	
 	if (self.placemark) {
-		subtitle = [NSString stringWithFormat:@"%@, %@", self.placemark.administrativeArea, self.placemark.country];
+		subtitle = [[self.placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
 	} else {
 		subtitle = [NSString stringWithFormat:@"%lf, %lf", self.coordinate.latitude, self.coordinate.longitude];
 	}
