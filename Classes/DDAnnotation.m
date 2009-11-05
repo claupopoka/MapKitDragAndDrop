@@ -61,15 +61,11 @@
 }
 
 - (NSString *)subtitle {
-	NSString* subtitle = nil;
-	
 	if (_placemark) {
-		subtitle = [[_placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
-	} else {
-		subtitle = [NSString stringWithFormat:@"%lf, %lf", _coordinate.latitude, _coordinate.longitude];
-	}
+		return [[_placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+	} 
 	
-	return subtitle;
+	return [NSString stringWithFormat:@"%lf, %lf", _coordinate.latitude, _coordinate.longitude];
 }
 
 #pragma mark -

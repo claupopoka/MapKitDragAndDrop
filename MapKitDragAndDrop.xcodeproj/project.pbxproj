@@ -68,10 +68,7 @@
 				1D3623250D0F684500981E51 /* MapKitDragAndDropAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* MapKitDragAndDropViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* MapKitDragAndDropViewController.m */,
-				77D3F0F01019EB49008E062F /* DDAnnotation.h */,
-				77D3F0F11019EB49008E062F /* DDAnnotation.m */,
-				77D3F13C1019F5D1008E062F /* DDAnnotationView.h */,
-				77D3F13D1019F5D1008E062F /* DDAnnotationView.m */,
+				77F542B810A3762900BC2BC0 /* Drag and Drop MapKit */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -126,6 +123,17 @@
 				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		77F542B810A3762900BC2BC0 /* Drag and Drop MapKit */ = {
+			isa = PBXGroup;
+			children = (
+				77D3F0F01019EB49008E062F /* DDAnnotation.h */,
+				77D3F0F11019EB49008E062F /* DDAnnotation.m */,
+				77D3F13C1019F5D1008E062F /* DDAnnotationView.h */,
+				77D3F13D1019F5D1008E062F /* DDAnnotationView.m */,
+			);
+			name = "Drag and Drop MapKit";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
