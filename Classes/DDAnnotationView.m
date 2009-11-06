@@ -73,7 +73,7 @@
 	}
 	
 	// If dragging has begun, adjust the position of the view.
-    if (_isMoving) {
+    if (_mapView && _isMoving) {
         newCenter.x = _originalCenter.x + (newLocation.x - _startLocation.x);
         newCenter.y = _originalCenter.y + (newLocation.y - _startLocation.y);
         self.center = newCenter;
@@ -85,7 +85,7 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	
-    if (_isMoving) {				
+    if (_mapView && _isMoving) {				
         // Update the map coordinate to reflect the new position.
         CGPoint newCenter = self.center;
         DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
@@ -104,7 +104,7 @@
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 
-    if (_isMoving) {
+    if (_mapView && _isMoving) {
         // Move the view back to its starting point.
         self.center = _originalCenter;
 		
