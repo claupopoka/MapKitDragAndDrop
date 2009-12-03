@@ -45,7 +45,8 @@
 @synthesize placemark = _placemark;
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate title:(NSString*)title {
-	if (self = [super init]) {
+
+	if ((self = [super init])) {
 		[self changeCoordinate:coordinate];
 		_title = [title retain];
 		_placemark = nil;
@@ -65,7 +66,9 @@
 		return [[_placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
 	} 
 	
-	return [NSString stringWithFormat:@"%lf, %lf", _coordinate.latitude, _coordinate.longitude];
+	return [NSString stringWithFormat:@"%.4f° %@, %.4f° %@", 
+			fabs(_coordinate.latitude), signbit(_coordinate.latitude) ? @"South" : @"North", 
+			fabs(_coordinate.longitude), signbit(_coordinate.longitude) ? @"West" : @"East"];
 }
 
 #pragma mark -
