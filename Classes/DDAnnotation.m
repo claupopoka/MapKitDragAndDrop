@@ -30,6 +30,7 @@
 
 @interface DDAnnotation ()
 @property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) MKReverseGeocoder *reverseGeocoder;
 @property (nonatomic, retain) MKPlacemark *placemark;
 - (void)notifyCalloutInfo:(MKPlacemark *)placemark;
 @end
@@ -42,6 +43,7 @@
 
 @synthesize coordinate = _coordinate; // property declared in MKAnnotation.h
 @synthesize title = _title;
+@synthesize reverseGeocoder = _reverseGeocoder;
 @synthesize placemark = _placemark;
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate title:(NSString*)title {
@@ -78,10 +80,9 @@
 	_coordinate = coordinate;
 	
 	// Try to reverse geocode here
-	// Note: LLVM/Clang Static analyzer might report potentical leak, but it won't because we release in delegate methods 
-	MKReverseGeocoder *reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:_coordinate];
-	reverseGeocoder.delegate = self;
-	[reverseGeocoder start];
+	self.reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:_coordinate];
+	_reverseGeocoder.delegate = self;
+	[_reverseGeocoder start];
 }
 
 #pragma mark -
@@ -89,14 +90,16 @@
 
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)newPlacemark {
 	[self notifyCalloutInfo:newPlacemark];
-	geocoder.delegate = nil;
-	[geocoder release];
+	_reverseGeocoder.delegate = nil;
+	[_reverseGeocoder release];
+	self.reverseGeocoder = nil;
 }
 
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFailWithError:(NSError *)error {
 	[self notifyCalloutInfo:nil];
-	geocoder.delegate = nil;
-	[geocoder release];
+	_reverseGeocoder.delegate = nil;
+	[_reverseGeocoder release];
+	self.reverseGeocoder = nil;
 }
 
 #pragma mark -

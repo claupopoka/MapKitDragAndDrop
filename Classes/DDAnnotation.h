@@ -32,6 +32,7 @@
 @private
 	CLLocationCoordinate2D _coordinate;
 	NSString *_title;
+	MKReverseGeocoder *_reverseGeocoder;
 	MKPlacemark *_placemark;
 }
 
