@@ -78,7 +78,9 @@
 
 - (void)changeCoordinate:(CLLocationCoordinate2D)coordinate {
 	_coordinate = coordinate;
-	
+
+	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"DDAnnotationCoordinateDidChangeNotification" object:self]];
+		
 	// Try to reverse geocode here
 	self.reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:_coordinate];
 	_reverseGeocoder.delegate = self;
