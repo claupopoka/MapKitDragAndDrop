@@ -28,14 +28,6 @@
 
 #import "DDAnnotation.h"
 
-@interface DDAnnotation ()
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) MKReverseGeocoder *reverseGeocoder;
-@property (nonatomic, retain) MKPlacemark *placemark;
-- (void)notifyCalloutInfo:(MKPlacemark *)placemark;
-@end
-
-
 #pragma mark -
 #pragma mark DDAnnotation implementation
 
@@ -43,29 +35,41 @@
 
 @synthesize coordinate = _coordinate; // property declared in MKAnnotation.h
 @synthesize title = _title;
-@synthesize reverseGeocoder = _reverseGeocoder;
-@synthesize placemark = _placemark;
+@synthesize subtitle = _subtitle;
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate title:(NSString*)title {
+- (id)initWithCoordinate:(CLLocationCoordinate2D)newCoordinate title:(NSString*)newTitle {
 
 	if ((self = [super init])) {
-		[self changeCoordinate:coordinate];
-		_title = [title retain];
-		_placemark = nil;
+		[self changeCoordinate:newCoordinate];
+		_title = [newTitle retain];
 	}
 	return self;
 }
 
 #pragma mark -
-#pragma mark MKAnnotation Methods
+#pragma mark Memory Management
 
-- (NSString *)title {
-	return _title;
+- (void)dealloc {
+	
+	if (_title) {
+		[_title release];
+		_title = nil;		
+	}
+	
+	if (_subtitle) {
+		[_subtitle release];
+		_subtitle = nil;		
+	}
+	
+	[super dealloc];
 }
 
+#pragma mark -
+#pragma mark Override MKAnnotation Method
+
 - (NSString *)subtitle {
-	if (_placemark) {
-		return [[_placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+	if (_subtitle) {
+		return _subtitle; 
 	} 
 	
 	return [NSString stringWithFormat:@"%.4f° %@, %.4f° %@", 
@@ -76,52 +80,10 @@
 #pragma mark -
 #pragma mark Change coordinate
 
-- (void)changeCoordinate:(CLLocationCoordinate2D)coordinate {
-	_coordinate = coordinate;
+- (void)changeCoordinate:(CLLocationCoordinate2D)newCoordinate {
+	_coordinate = newCoordinate;
 
-	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"DDAnnotationCoordinateDidChangeNotification" object:self]];
-		
-	// Try to reverse geocode here
-	self.reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:_coordinate];
-	_reverseGeocoder.delegate = self;
-	[_reverseGeocoder start];
-}
-
-#pragma mark -
-#pragma mark MKReverseGeocoderDelegate methods
-
-- (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)newPlacemark {
-	[self notifyCalloutInfo:newPlacemark];
-	_reverseGeocoder.delegate = nil;
-	[_reverseGeocoder release];
-	self.reverseGeocoder = nil;
-}
-
-- (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFailWithError:(NSError *)error {
-	[self notifyCalloutInfo:nil];
-	_reverseGeocoder.delegate = nil;
-	[_reverseGeocoder release];
-	self.reverseGeocoder = nil;
-}
-
-#pragma mark -
-#pragma mark MKAnnotationView Notification
-
-- (void)notifyCalloutInfo:(MKPlacemark *)newPlacemark {
-	[self willChangeValueForKey:@"subtitle"]; // Workaround for SDK 3.0, otherwise callout info won't update.
-	self.placemark = newPlacemark;
-	[self didChangeValueForKey:@"subtitle"]; // Workaround for SDK 3.0, otherwise callout info won't update.
-	
-	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"MKAnnotationCalloutInfoDidChangeNotification" object:self]];
-}
-
-#pragma mark -
-#pragma mark Memory Management
-
-- (void)dealloc {
-	[_title release], _title = nil;
-	[_placemark release], _placemark = nil;
-	[super dealloc];
+	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"DDAnnotationCoordinateDidChangeNotification" object:self]];		
 }
 
 @end

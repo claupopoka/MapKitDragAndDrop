@@ -31,6 +31,8 @@
 
 @interface MapKitDragAndDropViewController ()
 @property (nonatomic, retain) CLLocationManager *locationManager;
+
+- (void)coordinateChanged:(NSNotification *)notification;
 @end
 
 
@@ -49,6 +51,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];	
 
+	[[NSNotificationCenter defaultCenter] addObserver:self 
+											 selector:@selector(coordinateChanged:)
+												 name:@"DDAnnotationCoordinateDidChangeNotification" 
+											   object:nil];	
+
+	_annotations = [[NSMutableSet alloc] initWithCapacity:1];
+	
 	_mapView.showsUserLocation = YES;
 
 	// Start by locating current position
@@ -64,14 +73,12 @@
 	
 	// Add annotation to map
 	DDAnnotation *annotation = [[DDAnnotation alloc] initWithCoordinate:newLocation.coordinate title:@"Drag to move Pin"];
+	[_annotations addObject:annotation];
 	[_mapView addAnnotation:annotation];
 	[annotation release];
 
 	// We only update location once, and let users to do the rest of the changes by dragging annotation to place they want
 	[manager stopUpdatingLocation];
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
 }
 
 #pragma mark -
@@ -100,13 +107,44 @@
 	return annotationView;
 }
 
-- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views {	
-}
-
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
 	if ([control isKindOfClass:[UIButton class]]) {		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://hollowout.blogspot.com"]];
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://digdog.tumblr.com"]];
+	}
+}
+
+#pragma mark -
+#pragma mark Notification and ReverseGeocoding
+
+- (void)coordinateChanged:(NSNotification *)notification {
+	DDAnnotation *annotation = notification.object;
+	
+	if (_reverseGeocoder) {
+		[_reverseGeocoder cancel];
+		_reverseGeocoder.delegate = nil;
+		[_reverseGeocoder release];
+		_reverseGeocoder = nil;
+	}
+	
+	_reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:annotation.coordinate];
+	_reverseGeocoder.delegate = self;
+	[_reverseGeocoder start];	
+}
+
+- (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)newPlacemark {
+	for (DDAnnotation *annotation in _annotations) {
+		if (annotation.coordinate.latitude == geocoder.coordinate.latitude && annotation.coordinate.longitude == geocoder.coordinate.longitude) {
+			annotation.subtitle = [[newPlacemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+		}
+	}
+}
+
+- (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFailWithError:(NSError *)error {
+	for (DDAnnotation *annotation in _annotations) {
+		if (annotation.coordinate.latitude == geocoder.coordinate.latitude && annotation.coordinate.longitude == geocoder.coordinate.longitude) {
+			annotation.subtitle = nil;
+		}
 	}
 }
 
@@ -123,12 +161,34 @@
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
+	self.mapView.delegate = nil;
 	self.mapView = nil;
 }
 
 - (void)dealloc {
-	[_locationManager release], _locationManager = nil;
-    [_mapView release], _mapView = nil;
+	[[NSNotificationCenter defaultCenter] removeObserver:self]; 
+
+	if (_mapView) {
+		for (DDAnnotation *annotation in _annotations) {
+			[_mapView removeAnnotation:annotation];
+			[_annotations release];
+		}
+		_mapView.delegate = nil;
+		[_mapView release];
+		_mapView = nil;
+	}
+	
+	if (_annotations) {
+		[_annotations release];
+		_annotations = nil;		
+	}
+	
+	if (_locationManager) {
+		_locationManager.delegate = nil;
+		[_locationManager release];
+		_locationManager = nil;
+	}
+	
     [super dealloc];
 }
 

@@ -31,10 +31,13 @@
 
 @class DDAnnotation;
 
-@interface MapKitDragAndDropViewController : UIViewController <CLLocationManagerDelegate, MKMapViewDelegate> {
+@interface MapKitDragAndDropViewController : UIViewController <CLLocationManagerDelegate, MKMapViewDelegate, MKReverseGeocoderDelegate> {
 @private
 	CLLocationManager *_locationManager;
+	MKReverseGeocoder *_reverseGeocoder;
 	MKMapView* _mapView;
+	
+	NSMutableSet *_annotations;
 }
 
 @property (nonatomic, retain) IBOutlet MKMapView* mapView;
