@@ -12,10 +12,10 @@
 //  distribute, sublicense, and/or sell copies of the Software, and to
 //  permit persons to whom the Software is furnished to do so, subject to
 //  the following conditions:
-//   
+//
 //  The above copyright notice and this permission notice shall be
 //  included in all copies or substantial portions of the Software.
-//   
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 //  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 //  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -27,20 +27,19 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
-#import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 
 @interface DDAnnotationView : MKAnnotationView {
-	
-@private	
-	CALayer *			_pinShadowLayer;
-	UIImageView *		_pinShadow;
-	
+
+@private
+    CALayer *           _pinShadowLayer;
+	UIImageView *       _pinShadow;
+
     MKMapView *			_mapView;
-	
+
     BOOL				_isMoving;
     CGPoint				_startLocation;
-    CGPoint				_originalCenter;	
+    CGPoint				_originalCenter;
 }
 
 @property (nonatomic, assign) MKMapView *			mapView;

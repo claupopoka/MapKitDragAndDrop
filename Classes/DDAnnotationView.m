@@ -178,7 +178,7 @@
 	
 	[self.layer addAnimation:[DDAnnotationView _liftForDraggingAnimation] forKey:@"DDPinAnimation"];
 
-	[UIView beginAnimations:@"DDSadowLiftAnimation" context:NULL];
+	[UIView beginAnimations:@"DDShadowLiftAnimation" context:NULL];
 	[UIView setAnimationDelegate:self];
 	[UIView setAnimationWillStartSelector:@selector(shadowLiftWillStart:context:)];
 	[UIView setAnimationDelay:0.1];

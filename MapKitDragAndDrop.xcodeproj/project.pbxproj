@@ -14,8 +14,8 @@
 		2899E5220DE3E06400AC0155 /* MapKitDragAndDropViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* MapKitDragAndDropViewController.xib */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		28D7ACF80DDB3853001CB0EB /* MapKitDragAndDropViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* MapKitDragAndDropViewController.m */; };
+		7713884D10E09D5600424E73 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7713884C10E09D5600424E73 /* CoreGraphics.framework */; };
 		779E025510E0915A0074F016 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 779E025410E0915A0074F016 /* QuartzCore.framework */; };
-		779E026E10E091F00074F016 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		779E028A10E093410074F016 /* Pin.png in Resources */ = {isa = PBXBuildFile; fileRef = 779E028410E093410074F016 /* Pin.png */; };
 		779E028B10E093410074F016 /* PinDown1.png in Resources */ = {isa = PBXBuildFile; fileRef = 779E028510E093410074F016 /* PinDown1.png */; };
 		779E028C10E093410074F016 /* PinDown2.png in Resources */ = {isa = PBXBuildFile; fileRef = 779E028610E093410074F016 /* PinDown2.png */; };
@@ -35,13 +35,13 @@
 		1D3623250D0F684500981E51 /* MapKitDragAndDropAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapKitDragAndDropAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* MapKitDragAndDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapKitDragAndDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2899E5210DE3E06400AC0155 /* MapKitDragAndDropViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MapKitDragAndDropViewController.xib; path = Resources/MapKitDragAndDropViewController.xib; sourceTree = "<group>"; };
 		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = Resources/MainWindow.xib; sourceTree = "<group>"; };
 		28D7ACF60DDB3853001CB0EB /* MapKitDragAndDropViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapKitDragAndDropViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* MapKitDragAndDropViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapKitDragAndDropViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* MapKitDragAndDrop_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapKitDragAndDrop_Prefix.pch; sourceTree = "<group>"; };
+		7713884C10E09D5600424E73 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		779E025410E0915A0074F016 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		779E028410E093410074F016 /* Pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pin.png; path = Resources/Pin.png; sourceTree = "<group>"; };
 		779E028510E093410074F016 /* PinDown1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = PinDown1.png; path = Resources/PinDown1.png; sourceTree = "<group>"; };
@@ -69,7 +69,7 @@
 				77D3F09A1019E577008E062F /* CoreLocation.framework in Frameworks */,
 				77D3F09C1019E577008E062F /* MapKit.framework in Frameworks */,
 				779E025510E0915A0074F016 /* QuartzCore.framework in Frameworks */,
-				779E026E10E091F00074F016 /* CoreGraphics.framework in Frameworks */,
+				7713884D10E09D5600424E73 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,8 +137,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7713884C10E09D5600424E73 /* CoreGraphics.framework */,
 				779E025410E0915A0074F016 /* QuartzCore.framework */,
-				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
 				77D3F0991019E577008E062F /* CoreLocation.framework */,
 				77D3F09B1019E577008E062F /* MapKit.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
