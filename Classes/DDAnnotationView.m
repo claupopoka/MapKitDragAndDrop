@@ -245,6 +245,8 @@
 		
 		[theAnnotation setCoordinate:newCoordinate];
 		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"DDAnnotationCoordinateDidChangeNotification" object:theAnnotation];
+		
         // Clean up the state information.
         _startLocation = CGPointZero;
         _originalCenter = CGPointZero;
