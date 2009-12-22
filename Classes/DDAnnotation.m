@@ -25,7 +25,6 @@
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 #import "DDAnnotation.h"
 
 #pragma mark -
@@ -33,57 +32,30 @@
 
 @implementation DDAnnotation
 
-@synthesize coordinate = _coordinate; // property declared in MKAnnotation.h
+@synthesize coordinate = _coordinate;
 @synthesize title = _title;
 @synthesize subtitle = _subtitle;
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)newCoordinate title:(NSString*)newTitle {
+#pragma mark -
+#pragma mark MKPlacemark Boilerplate
 
-	if ((self = [super init])) {
-		[self changeCoordinate:newCoordinate];
-		_title = [newTitle retain];
+- (id)initWithCoordinate:(CLLocationCoordinate2D)newCoordinate addressDictionary:(NSDictionary *)newAddressDictionary {
+
+	if ((self = [super initWithCoordinate:newCoordinate addressDictionary:newAddressDictionary])) {
+		_coordinate = newCoordinate;		
 	}
 	return self;
 }
 
-#pragma mark -
-#pragma mark Memory Management
-
 - (void)dealloc {
-	
-	if (_title) {
-		[_title release];
-		_title = nil;		
-	}
-	
-	if (_subtitle) {
-		[_subtitle release];
-		_subtitle = nil;		
-	}
-	
+
+	[_title release];
+	_title = nil;
+
+	[_subtitle release];
+	_subtitle = nil;
+		
 	[super dealloc];
-}
-
-#pragma mark -
-#pragma mark Override MKAnnotation Method
-
-- (NSString *)subtitle {
-	if (_subtitle) {
-		return _subtitle; 
-	} 
-	
-	return [NSString stringWithFormat:@"%.4f° %@, %.4f° %@", 
-			fabs(_coordinate.latitude), signbit(_coordinate.latitude) ? @"South" : @"North", 
-			fabs(_coordinate.longitude), signbit(_coordinate.longitude) ? @"West" : @"East"];
-}
-
-#pragma mark -
-#pragma mark Change coordinate
-
-- (void)changeCoordinate:(CLLocationCoordinate2D)newCoordinate {
-	_coordinate = newCoordinate;
-
-	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"DDAnnotationCoordinateDidChangeNotification" object:self]];		
 }
 
 @end

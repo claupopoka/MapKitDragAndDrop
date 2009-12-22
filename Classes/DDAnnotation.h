@@ -25,19 +25,20 @@
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 #import <MapKit/MapKit.h>
 
-@interface DDAnnotation : NSObject <MKAnnotation> {
+@interface DDAnnotation : MKPlacemark {	
+
 @private
-	CLLocationCoordinate2D _coordinate;
-	NSString *_title;
-	NSString *_subtitle;
+	CLLocationCoordinate2D			_coordinate;
+	NSString *						_title;
+	NSString *						_subtitle;
 }
 
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *subtitle;
+// Re-declare MKAnnotation's readonly property 'coordinate' to readwrite
+@property (nonatomic, readwrite, assign) CLLocationCoordinate2D			coordinate;
+@property (nonatomic, retain) NSString *								title;
+@property (nonatomic, retain) NSString *								subtitle;
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)newCoordinate title:(NSString*)newTitle;
-- (void)changeCoordinate:(CLLocationCoordinate2D)newCoordinate;
+- (id)initWithCoordinate:(CLLocationCoordinate2D)newCoordinate addressDictionary:(NSDictionary *)newAddressDictionary;
 @end

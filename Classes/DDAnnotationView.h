@@ -25,18 +25,24 @@
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import <QuartzCore/QuartzCore.h>
 
-@interface DDAnnotationView : MKPinAnnotationView {
+@interface DDAnnotationView : MKAnnotationView {
+	
 @private	
-    BOOL _isMoving;
-    CGPoint _startLocation;
-    CGPoint _originalCenter;
-    MKMapView* _mapView;	
+	CALayer *			_pinShadowLayer;
+	UIImageView *		_pinShadow;
+	
+    MKMapView *			_mapView;
+	
+    BOOL				_isMoving;
+    CGPoint				_startLocation;
+    CGPoint				_originalCenter;	
 }
 
-@property (nonatomic, assign) MKMapView* mapView;
+@property (nonatomic, assign) MKMapView *			mapView;
 
 @end

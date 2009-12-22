@@ -58,8 +58,6 @@
 
 	_annotations = [[NSMutableSet alloc] initWithCapacity:1];
 	
-	_mapView.showsUserLocation = YES;
-
 	// Start by locating current position
 	self.locationManager = [[CLLocationManager alloc] init];
 	_locationManager.delegate = self;
@@ -72,7 +70,8 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
 	
 	// Add annotation to map
-	DDAnnotation *annotation = [[DDAnnotation alloc] initWithCoordinate:newLocation.coordinate title:@"Drag to move Pin"];
+	DDAnnotation *annotation = [[DDAnnotation alloc] initWithCoordinate:newLocation.coordinate addressDictionary:nil];
+	annotation.title = @"Drag to move Pin";
 	[_annotations addObject:annotation];
 	[_mapView addAnnotation:annotation];
 	[annotation release];
