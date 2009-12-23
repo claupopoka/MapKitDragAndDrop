@@ -22,6 +22,7 @@
 		779E028D10E093410074F016 /* PinDown3.png in Resources */ = {isa = PBXBuildFile; fileRef = 779E028710E093410074F016 /* PinDown3.png */; };
 		779E028E10E093410074F016 /* PinFloating.png in Resources */ = {isa = PBXBuildFile; fileRef = 779E028810E093410074F016 /* PinFloating.png */; };
 		779E028F10E093410074F016 /* PinShadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 779E028910E093410074F016 /* PinShadow.png */; };
+		77B658BB10E1DE6600EC187D /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 77B658BA10E1DE6600EC187D /* README.markdown */; };
 		77D3F09A1019E577008E062F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D3F0991019E577008E062F /* CoreLocation.framework */; };
 		77D3F09C1019E577008E062F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77D3F09B1019E577008E062F /* MapKit.framework */; };
 		77D3F0F21019EB49008E062F /* DDAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 77D3F0F11019EB49008E062F /* DDAnnotation.m */; };
@@ -49,6 +50,7 @@
 		779E028710E093410074F016 /* PinDown3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = PinDown3.png; path = Resources/PinDown3.png; sourceTree = "<group>"; };
 		779E028810E093410074F016 /* PinFloating.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = PinFloating.png; path = Resources/PinFloating.png; sourceTree = "<group>"; };
 		779E028910E093410074F016 /* PinShadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = PinShadow.png; path = Resources/PinShadow.png; sourceTree = "<group>"; };
+		77B658BA10E1DE6600EC187D /* README.markdown */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = README.markdown; sourceTree = "<group>"; };
 		77D3F0991019E577008E062F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		77D3F09B1019E577008E062F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		77D3F0F01019EB49008E062F /* DDAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAnnotation.h; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				77B658BA10E1DE6600EC187D /* README.markdown */,
 				779E028410E093410074F016 /* Pin.png */,
 				779E028510E093410074F016 /* PinDown1.png */,
 				779E028610E093410074F016 /* PinDown2.png */,
@@ -213,6 +216,7 @@
 				779E028D10E093410074F016 /* PinDown3.png in Resources */,
 				779E028E10E093410074F016 /* PinFloating.png in Resources */,
 				779E028F10E093410074F016 /* PinShadow.png in Resources */,
+				77B658BB10E1DE6600EC187D /* README.markdown in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

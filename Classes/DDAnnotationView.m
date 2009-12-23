@@ -3,7 +3,7 @@
 //  MapKitDragAndDrop
 //
 //  Created by digdog on 7/24/09.
-//  Copyright 2009 digdog software.
+//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -27,17 +27,17 @@
 
 #import "DDAnnotationView.h"
 #import "DDAnnotation.h"
+#import <CoreGraphics/CoreGraphics.h> // For CGPointZero
+#import <QuartzCore/QuartzCore.h> // For CAAnimation
 
 @interface DDAnnotationView ()
 
 // Properties that don't need to be seen by the outside world.
 
-@property (nonatomic, retain) CALayer *			pinShadowLayer;
-@property (nonatomic, retain) UIImageView *		pinShadow;
-
 @property (nonatomic, assign) BOOL				isMoving;
 @property (nonatomic, assign) CGPoint			startLocation;
 @property (nonatomic, assign) CGPoint			originalCenter;
+@property (nonatomic, retain) UIImageView *		pinShadow;
 
 // Forward declarations
 
@@ -119,13 +119,11 @@
 	return group;	
 }
 
-@synthesize pinShadowLayer = _pinShadowLayer;
-@synthesize pinShadow = _pinShadow;
-
-@synthesize mapView = _mapView;
 @synthesize isMoving = _isMoving;
 @synthesize startLocation = _startLocation;
 @synthesize originalCenter = _originalCenter;
+@synthesize pinShadow = _pinShadow;
+@synthesize mapView = _mapView;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -148,9 +146,6 @@
 }
 
 - (void)dealloc {
-	[_pinShadowLayer release];
-	_pinShadowLayer = nil;
-	
 	[_pinShadow release];
 	_pinShadow = nil;
 	
@@ -158,6 +153,7 @@
 }
 
 #pragma mark -
+#pragma mark UIView animation delegates
 
 - (void)shadowLiftWillStart:(NSString *)animationID context:(void *)context {
 	self.pinShadow.hidden = NO;

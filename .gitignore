@@ -16,3 +16,4 @@ build/*
 # osx noise
 .DS_Store
 profile
+*.mode2v3

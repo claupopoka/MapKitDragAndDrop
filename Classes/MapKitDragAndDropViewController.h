@@ -3,7 +3,7 @@
 //  MapKitDragAndDrop
 //
 //  Created by digdog on 7/24/09.
-//  Copyright digdog software 2009.
+//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -25,21 +25,17 @@
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
-@class DDAnnotation;
-
 @interface MapKitDragAndDropViewController : UIViewController <CLLocationManagerDelegate, MKMapViewDelegate, MKReverseGeocoderDelegate> {
 @private
-	CLLocationManager *_locationManager;
-	MKReverseGeocoder *_reverseGeocoder;
-	MKMapView* _mapView;
-	
-	NSMutableSet *_annotations;
+	NSMutableSet *				_annotations;
+	CLLocationManager *			_locationManager;
+	MKReverseGeocoder *			_reverseGeocoder;
+	MKMapView*					_mapView;
 }
 
-@property (nonatomic, retain) IBOutlet MKMapView* mapView;
+@property (nonatomic, retain) IBOutlet MKMapView *			mapView;
 @end
 

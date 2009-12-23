@@ -3,7 +3,7 @@
 //  MapKitDragAndDrop
 //
 //  Created by digdog on 7/24/09.
-//  Copyright digdog software 2009.
+//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -31,12 +31,12 @@
 @class MapKitDragAndDropViewController;
 
 @interface MapKitDragAndDropAppDelegate : NSObject <UIApplicationDelegate> {
-    UIWindow *window;
-    MapKitDragAndDropViewController *viewController;
+    UIWindow *									_window;
+    MapKitDragAndDropViewController *			_viewController;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet MapKitDragAndDropViewController *viewController;
+@property (nonatomic, retain) IBOutlet UIWindow *									window;
+@property (nonatomic, retain) IBOutlet MapKitDragAndDropViewController *			viewController;
 
 @end
 

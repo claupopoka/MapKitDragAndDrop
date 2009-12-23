@@ -3,7 +3,7 @@
 //  MapKitDragAndDrop
 //
 //  Created by digdog on 7/24/09.
-//  Copyright digdog software 2009.
+//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -25,27 +25,29 @@
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 #import "MapKitDragAndDropAppDelegate.h"
 #import "MapKitDragAndDropViewController.h"
 
 @implementation MapKitDragAndDropAppDelegate
 
-@synthesize window;
-@synthesize viewController;
-
+@synthesize window = _window;
+@synthesize viewController = _viewController;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
     
     // Override point for customization after app launch    
-    [window addSubview:viewController.view];
-    [window makeKeyAndVisible];
+    [self.window addSubview:self.viewController.view];
+    [self.window makeKeyAndVisible];
 }
 
-
 - (void)dealloc {
-    [viewController release];
-    [window release];
+	
+    [_viewController release];
+	_viewController = nil;
+	
+    [_window release];
+	_window	 = nil;
+	
     [super dealloc];
 }
 

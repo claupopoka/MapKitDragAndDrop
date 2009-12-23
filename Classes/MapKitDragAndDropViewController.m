@@ -3,7 +3,7 @@
 //  MapKitDragAndDrop
 //
 //  Created by digdog on 7/24/09.
-//  Copyright digdog software 2009.
+//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -30,38 +30,98 @@
 #import "DDAnnotationView.h"
 
 @interface MapKitDragAndDropViewController ()
-@property (nonatomic, retain) CLLocationManager *locationManager;
 
-- (void)coordinateChanged:(NSNotification *)notification;
+// Properties that don't need to be seen by the outside world.
+
+@property (nonatomic, retain) NSMutableSet *				annotations;
+@property (nonatomic, retain) CLLocationManager *			locationManager;
+@property (nonatomic, retain) MKReverseGeocoder *			reverseGeocoder;
+
+// Forward declarations
+
+- (void)_coordinateChanged:(NSNotification *)notification;
 @end
-
 
 #pragma mark -
 #pragma mark MapKitDragAndDropViewController implementation
 
 @implementation MapKitDragAndDropViewController
 
-@synthesize mapView = _mapView;
+- (void)_coordinateChanged:(NSNotification *)notification {
+	DDAnnotation *annotation = notification.object;
+	
+	if (self.reverseGeocoder) {
+		[self.reverseGeocoder cancel];
+		self.reverseGeocoder.delegate = nil;
+		self.reverseGeocoder = nil;
+	}
+	
+	// Note: If you lookup too many times within a very short of period, you might get error from Apple/Google.
+	// e.g."/SourceCache/ProtocolBuffer/ProtocolBuffer-19/Runtime/PBRequester.m:446 server returned error: 503"
+	// So you should avoid doing this in your code. This is just a demostration about how to reverse geocoding.
+	self.reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:annotation.coordinate];
+	self.reverseGeocoder.delegate = self;
+	[self.reverseGeocoder start];	
+}
+
+@synthesize annotations = _annotations;
 @synthesize locationManager = _locationManager;
+@synthesize reverseGeocoder = _reverseGeocoder;
+@synthesize mapView = _mapView;
 
 #pragma mark -
-#pragma mark UIViewController overrides
+#pragma mark View controller boilerplate
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];	
 
 	[[NSNotificationCenter defaultCenter] addObserver:self 
-											 selector:@selector(coordinateChanged:)
+											 selector:@selector(_coordinateChanged:)
 												 name:@"DDAnnotationCoordinateDidChangeNotification" 
 											   object:nil];	
 
-	_annotations = [[NSMutableSet alloc] initWithCapacity:1];
+	self.annotations = [[NSMutableSet alloc] initWithCapacity:1];
 	
 	// Start by locating current position
 	self.locationManager = [[CLLocationManager alloc] init];
-	_locationManager.delegate = self;
-	[_locationManager startUpdatingLocation];	
+	self.locationManager.delegate = self;
+	[self.locationManager startUpdatingLocation];	
+}
+
+- (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self]; 
+	
+	for (DDAnnotation *annotation in _annotations) {
+		[_mapView removeAnnotation:annotation];
+		[annotation release];
+	}
+	_mapView.delegate = nil;
+	[_mapView release];
+	_mapView = nil;
+	
+	[_annotations release];
+	_annotations = nil;		
+	
+	_locationManager.delegate = nil;
+	[_locationManager release];
+	_locationManager = nil;
+	
+    [super dealloc];
+}
+
+- (void)didReceiveMemoryWarning {
+	// Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+	
+	// Release any cached data, images, etc that aren't in use.
+}
+
+- (void)viewDidUnload {
+	// Release any retained subviews of the main view.
+	// e.g. self.myOutlet = nil;
+	self.mapView.delegate = nil;
+	self.mapView = nil;
 }
 
 #pragma mark -
@@ -72,8 +132,8 @@
 	// Add annotation to map
 	DDAnnotation *annotation = [[DDAnnotation alloc] initWithCoordinate:newLocation.coordinate addressDictionary:nil];
 	annotation.title = @"Drag to move Pin";
-	[_annotations addObject:annotation];
-	[_mapView addAnnotation:annotation];
+	[self.annotations addObject:annotation];
+	[self.mapView addAnnotation:annotation];
 	[annotation release];
 
 	// We only update location once, and let users to do the rest of the changes by dragging annotation to place they want
@@ -116,21 +176,6 @@
 #pragma mark -
 #pragma mark Notification and ReverseGeocoding
 
-- (void)coordinateChanged:(NSNotification *)notification {
-	DDAnnotation *annotation = notification.object;
-	
-	if (_reverseGeocoder) {
-		[_reverseGeocoder cancel];
-		_reverseGeocoder.delegate = nil;
-		[_reverseGeocoder release];
-		_reverseGeocoder = nil;
-	}
-	
-	_reverseGeocoder = [[MKReverseGeocoder alloc] initWithCoordinate:annotation.coordinate];
-	_reverseGeocoder.delegate = self;
-	[_reverseGeocoder start];	
-}
-
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)newPlacemark {
 	for (DDAnnotation *annotation in _annotations) {
 		if (annotation.coordinate.latitude == geocoder.coordinate.latitude && annotation.coordinate.longitude == geocoder.coordinate.longitude) {
@@ -146,49 +191,4 @@
 		}
 	}
 }
-
-#pragma mark -
-#pragma mark Memory Management
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-	self.mapView.delegate = nil;
-	self.mapView = nil;
-}
-
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self]; 
-
-	if (_mapView) {
-		for (DDAnnotation *annotation in _annotations) {
-			[_mapView removeAnnotation:annotation];
-			[_annotations release];
-		}
-		_mapView.delegate = nil;
-		[_mapView release];
-		_mapView = nil;
-	}
-	
-	if (_annotations) {
-		[_annotations release];
-		_annotations = nil;		
-	}
-	
-	if (_locationManager) {
-		_locationManager.delegate = nil;
-		[_locationManager release];
-		_locationManager = nil;
-	}
-	
-    [super dealloc];
-}
-
 @end
