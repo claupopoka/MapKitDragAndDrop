@@ -170,18 +170,20 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {	
 
-	[self.layer removeAllAnimations];
-	
-	[self.layer addAnimation:[DDAnnotationView _liftForDraggingAnimation] forKey:@"DDPinAnimation"];
-
-	[UIView beginAnimations:@"DDShadowLiftAnimation" context:NULL];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationWillStartSelector:@selector(shadowLiftWillStart:context:)];
-	[UIView setAnimationDelay:0.1];
-	[UIView setAnimationDuration:0.2];
-	self.pinShadow.center = CGPointMake(80, -20);
-	self.pinShadow.alpha = 1;
-	[UIView commitAnimations];
+	if (_mapView) {
+		[self.layer removeAllAnimations];
+		
+		[self.layer addAnimation:[DDAnnotationView _liftForDraggingAnimation] forKey:@"DDPinAnimation"];
+		
+		[UIView beginAnimations:@"DDShadowLiftAnimation" context:NULL];
+		[UIView setAnimationDelegate:self];
+		[UIView setAnimationWillStartSelector:@selector(shadowLiftWillStart:context:)];
+		[UIView setAnimationDelay:0.1];
+		[UIView setAnimationDuration:0.2];
+		self.pinShadow.center = CGPointMake(80, -20);
+		self.pinShadow.alpha = 1;
+		[UIView commitAnimations];
+	}
 		
 	// The view is configured for single touches only.
     UITouch* aTouch = [touches anyObject];
@@ -216,39 +218,60 @@
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-				
-    if (_mapView && _isMoving) {
 		
-		[self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
-		
-		// TODO: animation out-of-sync with self.layer
-		[UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
-		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
-		[UIView setAnimationDuration:0.1];
-		self.pinShadow.center = CGPointMake(90, -30);
-		self.pinShadow.center = CGPointMake(16.0, 19.5);
-		self.pinShadow.alpha = 0;
-		[UIView commitAnimations];		
-		
-        // Update the map coordinate to reflect the new position.
-        CGPoint newCenter;
-		newCenter.x = self.center.x - self.centerOffset.x;
-		newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height;
-		
-        DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
-        CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
-		
-		[theAnnotation setCoordinate:newCoordinate];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"DDAnnotationCoordinateDidChangeNotification" object:theAnnotation];
-		
-        // Clean up the state information.
-        _startLocation = CGPointZero;
-        _originalCenter = CGPointZero;
-        _isMoving = NO;
+	if (_mapView) {
+		if (_isMoving) {
+			
+			[self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
+			
+			// TODO: animation out-of-sync with self.layer
+			[UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
+			[UIView setAnimationDelegate:self];
+			[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
+			[UIView setAnimationDuration:0.1];
+			self.pinShadow.center = CGPointMake(90, -30);
+			self.pinShadow.center = CGPointMake(16.0, 19.5);
+			self.pinShadow.alpha = 0;
+			[UIView commitAnimations];		
+			
+			// Update the map coordinate to reflect the new position.
+			CGPoint newCenter;
+			newCenter.x = self.center.x - self.centerOffset.x;
+			newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height;
+			
+			DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
+			CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
+			
+			[theAnnotation setCoordinate:newCoordinate];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"DDAnnotationCoordinateDidChangeNotification" object:theAnnotation];
+			
+			// Clean up the state information.
+			_startLocation = CGPointZero;
+			_originalCenter = CGPointZero;
+			_isMoving = NO;
+		} else {
+			
+			// TODO: Currently no drop down effect but pin bounce only 
+			[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
+			
+			// TODO: animation out-of-sync with self.layer
+			[UIView beginAnimations:@"DDShadowDropAnimation" context:NULL];
+			[UIView setAnimationDelegate:self];
+			[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
+			[UIView setAnimationDuration:0.2];
+			self.pinShadow.center = CGPointMake(16.0, 19.5);
+			self.pinShadow.alpha = 0;
+			[UIView commitAnimations];		
+		}		
 	} else {
+		[super touchesEnded:touches withEvent:event];
+	}
+}
 
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+		
+    if (_mapView) {
 		// TODO: Currently no drop down effect but pin bounce only 
 		[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
 		
@@ -260,34 +283,16 @@
 		self.pinShadow.center = CGPointMake(16.0, 19.5);
 		self.pinShadow.alpha = 0;
 		[UIView commitAnimations];		
-        
-		[super touchesEnded:touches withEvent:event];		
-	}
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 		
-	// TODO: Currently no drop down effect but pin bounce only 
-	[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
-
-	// TODO: animation out-of-sync with self.layer
-	[UIView beginAnimations:@"DDShadowDropAnimation" context:NULL];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
-	[UIView setAnimationDuration:0.2];
-	self.pinShadow.center = CGPointMake(16.0, 19.5);
-	self.pinShadow.alpha = 0;
-	[UIView commitAnimations];		
-	
-    if (_mapView && _isMoving) {
-
-        // Move the view back to its starting point.
-        self.center = _originalCenter;
-		
-        // Clean up the state information.
-        _startLocation = CGPointZero;
-        _originalCenter = CGPointZero;
-        _isMoving = NO;
+		if (_isMoving) {
+			// Move the view back to its starting point.
+			self.center = _originalCenter;
+			
+			// Clean up the state information.
+			_startLocation = CGPointZero;
+			_originalCenter = CGPointZero;
+			_isMoving = NO;			
+		}		
     } else {
         [super touchesCancelled:touches withEvent:event];		
 	}	
