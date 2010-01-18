@@ -1,4 +1,4 @@
-# MapKitDragAndDrop 2.0
+# MapKitDragAndDrop 2.1
 
 MapKit sample for custom draggable AnnotationView with CoreAnimation pin lift/drop/bounce effects.
 
@@ -19,6 +19,7 @@ MapKit sample for custom draggable AnnotationView with CoreAnimation pin lift/dr
     2. Pin bounce and left for dragging.
     3. Pin drop and bounce when releasing the touch without moving.
     4. Pin lift, drop and bounce when releasing the touch after moving to the new position.  
+* **DDAnnotationView** won't do any animations unless MKMapView instance is assigned.
 
 ## Issues
 
