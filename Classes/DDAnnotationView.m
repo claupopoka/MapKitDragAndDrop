@@ -134,7 +134,7 @@
 		self.canShowCallout = YES;
 		
 		self.image = [UIImage imageNamed:@"Pin.png"];
-		self.centerOffset = CGPointMake(8, -10);
+		self.centerOffset = CGPointMake(8, -14);
 		self.calloutOffset = CGPointMake(-8, 0);
 		
 		_pinShadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PinShadow.png"]];
@@ -237,7 +237,7 @@
 			// Update the map coordinate to reflect the new position.
 			CGPoint newCenter;
 			newCenter.x = self.center.x - self.centerOffset.x;
-			newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height;
+			newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height + 4.;
 			
 			DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
 			CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
