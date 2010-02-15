@@ -134,7 +134,7 @@
 		self.canShowCallout = YES;
 		
 		self.image = [UIImage imageNamed:@"Pin.png"];
-		self.centerOffset = CGPointMake(8, -10);
+		self.centerOffset = CGPointMake(8, -14);
 		self.calloutOffset = CGPointMake(-8, 0);
 		
 		_pinShadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PinShadow.png"]];
@@ -210,7 +210,7 @@
         newCenter.x = _originalCenter.x + (newLocation.x - _startLocation.x);
         newCenter.y = _originalCenter.y + (newLocation.y - _startLocation.y);
 		
-        self.center = newCenter;
+        self.center = newCenter;		
     } else {
 		// Let the parent class handle it.
         [super touchesMoved:touches withEvent:event];		
@@ -218,10 +218,9 @@
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-		
-	if (_mapView) {
+				
+    if (_mapView) {		
 		if (_isMoving) {
-			
 			[self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
 			
 			// TODO: animation out-of-sync with self.layer
@@ -237,7 +236,7 @@
 			// Update the map coordinate to reflect the new position.
 			CGPoint newCenter;
 			newCenter.x = self.center.x - self.centerOffset.x;
-			newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height;
+			newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height + 4;
 			
 			DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
 			CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
@@ -249,9 +248,8 @@
 			// Clean up the state information.
 			_startLocation = CGPointZero;
 			_originalCenter = CGPointZero;
-			_isMoving = NO;
+			_isMoving = NO;			
 		} else {
-			
 			// TODO: Currently no drop down effect but pin bounce only 
 			[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
 			
@@ -262,15 +260,15 @@
 			[UIView setAnimationDuration:0.2];
 			self.pinShadow.center = CGPointMake(16.0, 19.5);
 			self.pinShadow.alpha = 0;
-			[UIView commitAnimations];		
-		}		
-	} else {
-		[super touchesEnded:touches withEvent:event];
-	}
+			[UIView commitAnimations];			
+		}
+	} else {        
+		[super touchesEnded:touches withEvent:event];		
+	}	
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-		
+			
     if (_mapView) {
 		// TODO: Currently no drop down effect but pin bounce only 
 		[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
@@ -283,7 +281,7 @@
 		self.pinShadow.center = CGPointMake(16.0, 19.5);
 		self.pinShadow.alpha = 0;
 		[UIView commitAnimations];		
-		
+				
 		if (_isMoving) {
 			// Move the view back to its starting point.
 			self.center = _originalCenter;
