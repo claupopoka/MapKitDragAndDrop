@@ -38,6 +38,7 @@
 @property (nonatomic, assign) CGPoint			startLocation;
 @property (nonatomic, assign) CGPoint			originalCenter;
 @property (nonatomic, retain) UIImageView *		pinShadow;
+@property (nonatomic, retain) NSTimer *         pinTimer;
 
 // Forward declarations
 
@@ -46,6 +47,9 @@
 + (CAAnimation *)_pinLiftAnimation;
 + (CAAnimation *)_liftForDraggingAnimation; // Used in touchesBegan:
 + (CAAnimation *)_liftAndDropAnimation;		// Used in touchesEnded: with touchesMoved: triggered
+- (void)_resetPinPosition:(NSTimer *)timer;
+- (void)_shadowLiftWillStart:(NSString *)animationID context:(void *)context;
+- (void)_shadowDropDidStop:(NSString *)animationID context:(void *)context;
 @end
 
 #pragma mark -
@@ -119,10 +123,57 @@
 	return group;	
 }
 
+- (void)_resetPinPosition:(NSTimer *)timer {
+    
+    [self.pinTimer invalidate];
+    self.pinTimer = nil;
+    
+    [self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
+    
+    // TODO: animation out-of-sync with self.layer
+    [UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
+    [UIView setAnimationDuration:0.1];
+    self.pinShadow.center = CGPointMake(90, -30);
+    self.pinShadow.center = CGPointMake(16.0, 19.5);
+    self.pinShadow.alpha = 0;
+    [UIView commitAnimations];		
+    
+    // Update the map coordinate to reflect the new position.
+    CGPoint newCenter;
+    newCenter.x = self.center.x - self.centerOffset.x;
+    newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height + 4.;
+    
+    DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
+    CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
+    
+    [theAnnotation setCoordinate:newCoordinate];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DDAnnotationCoordinateDidChangeNotification" object:theAnnotation];
+    
+    // Clean up the state information.
+    _startLocation = CGPointZero;
+    _originalCenter = CGPointZero;
+    _isMoving = NO;
+}
+
+#pragma mark -
+#pragma mark UIView animation delegates
+
+- (void)_shadowLiftWillStart:(NSString *)animationID context:(void *)context {
+	self.pinShadow.hidden = NO;
+}
+
+- (void)_shadowDropDidStop:(NSString *)animationID context:(void *)context {
+	self.pinShadow.hidden = YES;
+}
+
 @synthesize isMoving = _isMoving;
 @synthesize startLocation = _startLocation;
 @synthesize originalCenter = _originalCenter;
 @synthesize pinShadow = _pinShadow;
+@synthesize pinTimer = _pinTimer;
 @synthesize mapView = _mapView;
 
 #pragma mark -
@@ -146,21 +197,15 @@
 }
 
 - (void)dealloc {
+    
+    [_pinTimer invalidate];
+    [_pinTimer release];
+    _pinTimer = nil;
+    
 	[_pinShadow release];
 	_pinShadow = nil;
 	
 	[super dealloc];
-}
-
-#pragma mark -
-#pragma mark UIView animation delegates
-
-- (void)shadowLiftWillStart:(NSString *)animationID context:(void *)context {
-	self.pinShadow.hidden = NO;
-}
-
-- (void)shadowDropDidStop:(NSString *)animationID context:(void *)context {
-	self.pinShadow.hidden = YES;
 }
 
 #pragma mark -
@@ -177,7 +222,7 @@
 		
 		[UIView beginAnimations:@"DDShadowLiftAnimation" context:NULL];
 		[UIView setAnimationDelegate:self];
-		[UIView setAnimationWillStartSelector:@selector(shadowLiftWillStart:context:)];
+		[UIView setAnimationWillStartSelector:@selector(_shadowLiftWillStart:context:)];
 		[UIView setAnimationDelay:0.1];
 		[UIView setAnimationDuration:0.2];
 		self.pinShadow.center = CGPointMake(80, -20);
@@ -211,6 +256,11 @@
         newCenter.y = _originalCenter.y + (newLocation.y - _startLocation.y);
 		
         self.center = newCenter;
+        
+        [self.pinTimer invalidate];
+        self.pinTimer = nil;
+        self.pinTimer = [NSTimer timerWithTimeInterval:0.3 target:self selector:@selector(_resetPinPosition:) userInfo:nil repeats:NO];
+        [[NSRunLoop currentRunLoop] addTimer:self.pinTimer forMode:NSDefaultRunLoopMode];        
     } else {
 		// Let the parent class handle it.
         [super touchesMoved:touches withEvent:event];		
@@ -221,13 +271,15 @@
 		
 	if (_mapView) {
 		if (_isMoving) {
-			
+            [self.pinTimer invalidate];
+            self.pinTimer = nil;
+
 			[self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
 			
 			// TODO: animation out-of-sync with self.layer
 			[UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
 			[UIView setAnimationDelegate:self];
-			[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
+			[UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
 			[UIView setAnimationDuration:0.1];
 			self.pinShadow.center = CGPointMake(90, -30);
 			self.pinShadow.center = CGPointMake(16.0, 19.5);
@@ -258,7 +310,7 @@
 			// TODO: animation out-of-sync with self.layer
 			[UIView beginAnimations:@"DDShadowDropAnimation" context:NULL];
 			[UIView setAnimationDelegate:self];
-			[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
+			[UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
 			[UIView setAnimationDuration:0.2];
 			self.pinShadow.center = CGPointMake(16.0, 19.5);
 			self.pinShadow.alpha = 0;
@@ -278,13 +330,16 @@
 		// TODO: animation out-of-sync with self.layer
 		[UIView beginAnimations:@"DDShadowDropAnimation" context:NULL];
 		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop:context:)];
+		[UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
 		[UIView setAnimationDuration:0.2];
 		self.pinShadow.center = CGPointMake(16.0, 19.5);
 		self.pinShadow.alpha = 0;
 		[UIView commitAnimations];		
 		
 		if (_isMoving) {
+            [self.pinTimer invalidate];
+            self.pinTimer = nil;
+
 			// Move the view back to its starting point.
 			self.center = _originalCenter;
 			

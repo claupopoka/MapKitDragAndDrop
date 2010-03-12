@@ -35,6 +35,7 @@
     CGPoint				_startLocation;
     CGPoint				_originalCenter;
     UIImageView *		_pinShadow;
+    NSTimer *           _pinTimer;
 
     MKMapView *			_mapView;
 }
