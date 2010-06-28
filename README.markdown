@@ -1,34 +1,28 @@
-# MapKitDragAndDrop 2.2
+# MapKitDragAndDrop 3
 
-MapKit sample for custom draggable AnnotationView with CoreAnimation pin lift/drop/bounce effects.
+iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin lift/drop/bounce effects.
 
 ## Features
 
-* **Draggable** pin with **CoreAnimation** effects in the MapView
-* Use CLLocationManager to find current position
-* Use MKReverseGeocoder to lookup address
+* Support both **iPhone OS 3.1.x and iOS 4** at the same time, in the same source code.
+* Use iOS 4 MapKit built-in draggable support (Yes, you got **retina display** high resolution support for free!)
+* Use legacy MapKit techniques for creating iPhone OS 3.1.x draggable annotations.
+* Use **Core Animation** to create pin effects you saw in built-in Maps.app.
+* Use **modern runtime**, **Objective-C 2.0 ABI**, and **LLVM 1.5 compiler** (Move on, babe! Don't look back!).
 
-## Design
-* **DDAnnotation** is thin, just subclass from MKPlacemark, which also confirms to MKAnnotation protocol.
-* **DDAnnotation** can be init'd with existing address info, so you won't need to reverse geocoding when creating the annotation.
-* **DDAnnotation** re-declared MKAnnotation's readonly property 'coordinate' to readwrite-able. So you can update the coordinate after created.
-* **DDAnnotationView** is subclassing from MKAnnotationView now, and using several pin images from MapKit.framework.
-* To enable drag-and-drop, you must assign MKMapView instace to **DDAnnotationView**.
-* **DDAnnotationView** now comes with **CoreAnimation** effects, including:
-    1. Pin bounce when touched.
-    2. Pin bounce and left for dragging.
-    3. Pin drop and bounce when releasing the touch without moving.
-    4. Pin lift, drop and bounce when releasing the touch after moving to the new position.  
-* **DDAnnotationView** won't do any animations unless MKMapView instance is assigned.
-* **DDAnnotationView** will trigger NSTimer callback to reset pin position if failed to received touchesEnded: or touchesCancelled: 0.3 seconds after touchesMoved:
+## Requirements
 
-## Issues
+* Xcode 3.2.3 with iOS 4 SDK or Xcode 4 Preview.
+* Project file (.xcodeproj) needs to:
 
-* If you lookup too many times within a very short of period, you might get error from Apple/Google(so don't do this in your real world apps):
+  1. C/C++ Compiler Version (GCC_VERSION) set to "LLVM compiler 1.5"
+  2. Other C Flags (OTHER_CFLAGS) should add "-Xclang" and "-fobjc-nonfragile-abi2" flags
+  3. Base SDK (SDKROOT) should be "iPhone Device 4.0"
+  4. Deployment Target (IPHONEOS_DEPLOYMENT_TARGET) can be "iPhone OS 3.1" if you want.
 
-        /SourceCache/ProtocolBuffer/ProtocolBuffer-19/Runtime/PBRequester.m:446 server returned error: 503
+## Screenshot
 
-* Pin animations are almost perfect, but still need some works, I will kept things updated if possible.
+![](http://github.com/digdog/MapKitDragAndDrop/raw/master/Screenshots/DDAnnotationViewiPodTouch312.png)
 
 ## License 
 

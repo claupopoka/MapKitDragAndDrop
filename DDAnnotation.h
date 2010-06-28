@@ -1,9 +1,9 @@
 //
 //  DDAnnotation.h
-//  MapKitDragAndDrop
+//  MapKitDragAndDrop 3
 //
 //  Created by digdog on 7/24/09.
-//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
+//  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -27,18 +27,20 @@
 
 #import <MapKit/MapKit.h>
 
-@interface DDAnnotation : MKPlacemark {	
+@interface DDAnnotation : MKPlacemark {
 
-@private
-	CLLocationCoordinate2D			_coordinate;
-	NSString *						_title;
-	NSString *						_subtitle;
 }
 
-// Re-declare MKAnnotation's readonly property 'coordinate' to readwrite
-@property (nonatomic, readwrite, assign) CLLocationCoordinate2D			coordinate;
-@property (nonatomic, retain) NSString *								title;
-@property (nonatomic, retain) NSString *								subtitle;
+// Re-declare MKAnnotation's readonly property 'coordinate' to readwrite. 
+@property (nonatomic, readwrite, assign) CLLocationCoordinate2D coordinate;
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)newCoordinate addressDictionary:(NSDictionary *)newAddressDictionary;
+// NOTE: Since @synthesize by default is done by the LLVM 1.5 compiler (with 
+// flag -Xclang and -fobjc-nonfragile-abi2), we don't need to create method
+// -setCoordinate: and its ivar anymore. Check out WWDC 2010 Videos, Session 
+// 144 - "Advanced Objective-C and Garbage Collection Techniques", for more
+// details.
+
+@property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) NSString *subtitle;
+
 @end

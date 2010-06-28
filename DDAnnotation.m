@@ -1,9 +1,9 @@
 //
-//  MapKitDragAndDropAppDelegate.m
-//  MapKitDragAndDrop
+//  DDAnnotation.m
+//  MapKitDragAndDrop 3
 //
 //  Created by digdog on 7/24/09.
-//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
+//  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -25,31 +25,18 @@
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import "MapKitDragAndDropAppDelegate.h"
-#import "MapKitDragAndDropViewController.h"
+#import "DDAnnotation.h"
 
-@implementation MapKitDragAndDropAppDelegate
+@implementation DDAnnotation
 
-@synthesize window = _window;
-@synthesize viewController = _viewController;
+- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate addressDictionary:(NSDictionary *)addressDictionary {
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {    
-    
-    // Override point for customization after app launch    
-    [self.window addSubview:self.viewController.view];
-    [self.window makeKeyAndVisible];
+	if ((self = [super initWithCoordinate:coordinate addressDictionary:addressDictionary])) {
+		// NOTE: self.coordinate is now different from super.coordinate, since we re-declare this property in header, 
+		// self.coordinate and super.coordinate don't share same ivar anymore.
+		self.coordinate = coordinate;
+	}
+	return self;
 }
-
-- (void)dealloc {
-	
-    [_viewController release];
-	_viewController = nil;
-	
-    [_window release];
-	_window	 = nil;
-	
-    [super dealloc];
-}
-
 
 @end

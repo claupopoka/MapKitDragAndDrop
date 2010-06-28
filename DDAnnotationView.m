@@ -1,9 +1,9 @@
 //
 //  DDAnnotationView.m
-//  MapKitDragAndDrop
+//  MapKitDragAndDrop 3
 //
 //  Created by digdog on 7/24/09.
-//  Copyright 2009 Ching-Lan 'digdog' HUANG and digdog software.
+//  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
@@ -27,37 +27,76 @@
 
 #import "DDAnnotationView.h"
 #import "DDAnnotation.h"
-#import <CoreGraphics/CoreGraphics.h> // For CGPointZero
 #import <QuartzCore/QuartzCore.h> // For CAAnimation
 
-@interface DDAnnotationView ()
+@interface DDAnnotationView () 
+@property (nonatomic, assign) BOOL hasBuiltInDraggingSupport;
 
-// Properties that don't need to be seen by the outside world.
+@property (nonatomic, assign) BOOL isMoving;
+@property (nonatomic, assign) CGPoint startLocation;
+@property (nonatomic, assign) CGPoint originalCenter;
 
-@property (nonatomic, assign) BOOL				isMoving;
-@property (nonatomic, assign) CGPoint			startLocation;
-@property (nonatomic, assign) CGPoint			originalCenter;
-@property (nonatomic, retain) UIImageView *		pinShadow;
-@property (nonatomic, retain) NSTimer *         pinTimer;
+@property (nonatomic, retain) UIImageView *	pinShadow;
+@property (nonatomic, retain) NSTimer * pinTimer;
 
-// Forward declarations
-
-+ (CAAnimation *)_pinBounceAnimation;
-+ (CAAnimation *)_pinFloatingAnimation;
-+ (CAAnimation *)_pinLiftAnimation;
-+ (CAAnimation *)_liftForDraggingAnimation; // Used in touchesBegan:
-+ (CAAnimation *)_liftAndDropAnimation;		// Used in touchesEnded: with touchesMoved: triggered
-- (void)_resetPinPosition:(NSTimer *)timer;
-- (void)_shadowLiftWillStart:(NSString *)animationID context:(void *)context;
-- (void)_shadowDropDidStop:(NSString *)animationID context:(void *)context;
++ (CAAnimation *)pinBounceAnimation_;
++ (CAAnimation *)pinFloatingAnimation_;
++ (CAAnimation *)pinLiftAnimation_;
++ (CAAnimation *)liftForDraggingAnimation_; // Used in touchesBegan:
++ (CAAnimation *)liftAndDropAnimation_;		// Used in touchesEnded: when touchesMoved: previous triggered
+- (void)shadowLiftWillStart_:(NSString *)animationID context:(void *)context;
+- (void)shadowDropDidStop_:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
+- (void)resetPinPosition_:(NSTimer *)timer;
 @end
-
-#pragma mark -
-#pragma mark DDAnnotationView implementation
 
 @implementation DDAnnotationView
 
-+ (CAAnimation *)_pinBounceAnimation {
+- (void)dealloc {
+	
+	if (self.pinShadow) {
+		self.pinShadow = nil;		
+	}
+	
+	if (self.pinTimer) {
+		[self.pinTimer invalidate];
+		self.pinTimer = nil;		
+	}
+	
+	[super dealloc];
+}
+
+- (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier {
+		
+	self.hasBuiltInDraggingSupport = [[MKAnnotationView class] instancesRespondToSelector:NSSelectorFromString(@"isDraggable")];
+
+	if (self.hasBuiltInDraggingSupport) {
+		if ((self = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])) {
+			[self performSelector:NSSelectorFromString(@"setDraggable:") withObject:[NSNumber numberWithBool:YES]];
+		}
+	} else {
+		if ((self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])) {
+			self.image = [UIImage imageNamed:@"Pin.png"];
+			self.centerOffset = CGPointMake(8, -14);
+			self.calloutOffset = CGPointMake(-8, 0);
+			
+			self.pinShadow = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PinShadow.png"]] autorelease];
+			self.pinShadow.frame = CGRectMake(0, 0, 32, 39);
+			self.pinShadow.hidden = YES;
+			[self addSubview:self.pinShadow];
+		}
+	}
+	
+	self.canShowCallout = YES;
+	
+	return self;
+}
+
+// NOTE: iOS 4 MapKit won't use the source code below, we return a draggable MKPinAnnotationView instance instead.
+
+#pragma mark -
+#pragma mark Core Animation class methods
+
++ (CAAnimation *)pinBounceAnimation_ {
 	
 	CAKeyframeAnimation *pinBounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
 	
@@ -72,8 +111,8 @@
 	return pinBounceAnimation;
 }
 
-+ (CAAnimation *)_pinFloatingAnimation {
-
++ (CAAnimation *)pinFloatingAnimation_ {
+	
 	CAKeyframeAnimation *pinFloatingAnimation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
 	
 	[pinFloatingAnimation setValues:[NSArray arrayWithObject:(id)[UIImage imageNamed:@"PinFloating.png"].CGImage]];
@@ -82,22 +121,22 @@
 	return pinFloatingAnimation;
 }
 
-+ (CAAnimation *)_pinLiftAnimation {
-
++ (CAAnimation *)pinLiftAnimation_ {
+	
 	CABasicAnimation *liftAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
-
+	
 	liftAnimation.byValue = [NSValue valueWithCGPoint:CGPointMake(0.0, -39.0)];	
 	liftAnimation.duration = 0.2;
 	
 	return liftAnimation;
 }
 
-+ (CAAnimation *)_liftForDraggingAnimation {
++ (CAAnimation *)liftForDraggingAnimation_ {
 	
-	CAAnimation *pinBounceAnimation = [DDAnnotationView _pinBounceAnimation];	
-	CAAnimation *pinFloatingAnimation = [DDAnnotationView _pinFloatingAnimation];
+	CAAnimation *pinBounceAnimation = [DDAnnotationView pinBounceAnimation_];	
+	CAAnimation *pinFloatingAnimation = [DDAnnotationView pinFloatingAnimation_];
 	pinFloatingAnimation.beginTime = pinBounceAnimation.duration;
-	CAAnimation *pinLiftAnimation = [DDAnnotationView _pinLiftAnimation];	
+	CAAnimation *pinLiftAnimation = [DDAnnotationView pinLiftAnimation_];	
 	pinLiftAnimation.beginTime = pinBounceAnimation.duration;
 	
 	CAAnimationGroup *group = [CAAnimationGroup animation];
@@ -109,13 +148,13 @@
 	return group;
 }
 
-+ (CAAnimation *)_liftAndDropAnimation {
-		
-	CAAnimation *pinLiftAndDropAnimation = [DDAnnotationView _pinLiftAnimation];
-	CAAnimation *pinFloatingAnimation = [DDAnnotationView _pinFloatingAnimation];
-	CAAnimation *pinBounceAnimation = [DDAnnotationView _pinBounceAnimation];
++ (CAAnimation *)liftAndDropAnimation_ {
+	
+	CAAnimation *pinLiftAndDropAnimation = [DDAnnotationView pinLiftAnimation_];
+	CAAnimation *pinFloatingAnimation = [DDAnnotationView pinFloatingAnimation_];
+	CAAnimation *pinBounceAnimation = [DDAnnotationView pinBounceAnimation_];
 	pinBounceAnimation.beginTime = pinFloatingAnimation.duration;
-
+	
 	CAAnimationGroup *group = [CAAnimationGroup animation];
 	group.animations = [NSArray arrayWithObjects:pinLiftAndDropAnimation, pinFloatingAnimation, pinBounceAnimation, nil];
 	group.duration = pinFloatingAnimation.duration + pinBounceAnimation.duration;	
@@ -123,17 +162,30 @@
 	return group;	
 }
 
-- (void)_resetPinPosition:(NSTimer *)timer {
+#pragma mark -
+#pragma mark UIView animation delegates
+
+- (void)shadowLiftWillStart_:(NSString *)animationID context:(void *)context {
+	self.pinShadow.hidden = NO;
+}
+
+- (void)shadowDropDidStop_:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
+	self.pinShadow.hidden = YES;
+}
+
+#pragma mark NSTimer fire method
+
+- (void)resetPinPosition_:(NSTimer *)timer {
     
     [self.pinTimer invalidate];
     self.pinTimer = nil;
     
-    [self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
+    [self.layer addAnimation:[DDAnnotationView liftAndDropAnimation_] forKey:@"DDPinAnimation"];		
     
     // TODO: animation out-of-sync with self.layer
     [UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
     [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
+    [UIView setAnimationDidStopSelector:@selector(shadowDropDidStop_:context:)];
     [UIView setAnimationDuration:0.1];
     self.pinShadow.center = CGPointMake(90, -30);
     self.pinShadow.center = CGPointMake(16.0, 19.5);
@@ -145,141 +197,85 @@
     newCenter.x = self.center.x - self.centerOffset.x;
     newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height + 4.;
     
-    DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
-    CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
-    
+    DDAnnotation *theAnnotation = (DDAnnotation *)self.annotation;
+    CLLocationCoordinate2D newCoordinate = [self.mapView convertPoint:newCenter toCoordinateFromView:self.superview];
     [theAnnotation setCoordinate:newCoordinate];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"DDAnnotationCoordinateDidChangeNotification" object:theAnnotation];
     
     // Clean up the state information.
-    _startLocation = CGPointZero;
-    _originalCenter = CGPointZero;
-    _isMoving = NO;
-}
-
-#pragma mark -
-#pragma mark UIView animation delegates
-
-- (void)_shadowLiftWillStart:(NSString *)animationID context:(void *)context {
-	self.pinShadow.hidden = NO;
-}
-
-- (void)_shadowDropDidStop:(NSString *)animationID context:(void *)context {
-	self.pinShadow.hidden = YES;
-}
-
-@synthesize isMoving = _isMoving;
-@synthesize startLocation = _startLocation;
-@synthesize originalCenter = _originalCenter;
-@synthesize pinShadow = _pinShadow;
-@synthesize pinTimer = _pinTimer;
-@synthesize mapView = _mapView;
-
-#pragma mark -
-#pragma mark View boilerplate
-
-- (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier {
-	
-	if ((self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])) {
-		self.canShowCallout = YES;
-		
-		self.image = [UIImage imageNamed:@"Pin.png"];
-		self.centerOffset = CGPointMake(8, -14);
-		self.calloutOffset = CGPointMake(-8, 0);
-		
-		_pinShadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PinShadow.png"]];
-		_pinShadow.frame = CGRectMake(0, 0, 32, 39);
-		_pinShadow.hidden = YES;
-		[self addSubview:_pinShadow];
-	}
-	return self;
-}
-
-- (void)dealloc {
-    
-    [_pinTimer invalidate];
-    [_pinTimer release];
-    _pinTimer = nil;
-    
-	[_pinShadow release];
-	_pinShadow = nil;
-	
-	[super dealloc];
+    self.startLocation = CGPointZero;
+    self.originalCenter = CGPointZero;
+    self.isMoving = NO;
 }
 
 #pragma mark -
 #pragma mark Handling events
 
-// Reference: iPhone Application Programming Guide > Device Support > Displaying Maps and Annotations > Displaying Annotations > Handling Events in an Annotation View
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {	
-
-	if (_mapView) {
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	
+	if (self.mapView) {
 		[self.layer removeAllAnimations];
 		
-		[self.layer addAnimation:[DDAnnotationView _liftForDraggingAnimation] forKey:@"DDPinAnimation"];
+		[self.layer addAnimation:[DDAnnotationView liftForDraggingAnimation_] forKey:@"DDPinAnimation"];
 		
 		[UIView beginAnimations:@"DDShadowLiftAnimation" context:NULL];
 		[UIView setAnimationDelegate:self];
-		[UIView setAnimationWillStartSelector:@selector(_shadowLiftWillStart:context:)];
-		[UIView setAnimationDelay:0.1];
+		[UIView setAnimationWillStartSelector:@selector(shadowLiftWillStart_:context:)];
 		[UIView setAnimationDuration:0.2];
 		self.pinShadow.center = CGPointMake(80, -20);
 		self.pinShadow.alpha = 1;
 		[UIView commitAnimations];
 	}
-		
+	
 	// The view is configured for single touches only.
-    UITouch* aTouch = [touches anyObject];
-    _startLocation = [aTouch locationInView:[self superview]];
-    _originalCenter = self.center;
-		
+	self.startLocation = [[touches anyObject] locationInView:[self superview]];
+	self.originalCenter = self.center;		
+	
     [super touchesBegan:touches withEvent:event];	
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-
-    UITouch* aTouch = [touches anyObject];
-    CGPoint newLocation = [aTouch locationInView:[self superview]];
-    CGPoint newCenter;
-		
+	
+	CGPoint newLocation = [[touches anyObject] locationInView:[self superview]];
+	CGPoint newCenter;
+	
 	// If the user's finger moved more than 5 pixels, begin the drag.
-    if ((abs(newLocation.x - _startLocation.x) > 5.0) || (abs(newLocation.y - _startLocation.y) > 5.0)) {
-		_isMoving = YES;		
+	if ((abs(newLocation.x - self.startLocation.x) > 5.0) || (abs(newLocation.y - self.startLocation.y) > 5.0)) {
+		self.isMoving = YES;
 	}
 	
 	// If dragging has begun, adjust the position of the view.
-    if (_mapView && _isMoving) {
+	if (self.mapView && self.isMoving) {
 		
-        newCenter.x = _originalCenter.x + (newLocation.x - _startLocation.x);
-        newCenter.y = _originalCenter.y + (newLocation.y - _startLocation.y);
+		newCenter.x = self.originalCenter.x + (newLocation.x - self.startLocation.x);
+		newCenter.y = self.originalCenter.y + (newLocation.y - self.startLocation.y);
 		
-        self.center = newCenter;
-        
-        [self.pinTimer invalidate];
-        self.pinTimer = nil;
-        self.pinTimer = [NSTimer timerWithTimeInterval:0.3 target:self selector:@selector(_resetPinPosition:) userInfo:nil repeats:NO];
-        [[NSRunLoop currentRunLoop] addTimer:self.pinTimer forMode:NSDefaultRunLoopMode];        
-    } else {
+		self.center = newCenter;
+		
+		[self.pinTimer invalidate];
+		self.pinTimer = nil;
+		self.pinTimer = [NSTimer timerWithTimeInterval:0.3 target:self selector:@selector(resetPinPosition_:) userInfo:nil repeats:NO];
+		[[NSRunLoop currentRunLoop] addTimer:self.pinTimer forMode:NSDefaultRunLoopMode];        
+	} else {
 		// Let the parent class handle it.
-        [super touchesMoved:touches withEvent:event];		
-	}
+		[super touchesMoved:touches withEvent:event];		
+	}			
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-		
-	if (_mapView) {
-		if (_isMoving) {
-            [self.pinTimer invalidate];
-            self.pinTimer = nil;
-
-			[self.layer addAnimation:[DDAnnotationView _liftAndDropAnimation] forKey:@"DDPinAnimation"];		
+	
+	if (self.mapView) {
+		if (self.isMoving) {
+			[self.pinTimer invalidate];
+			self.pinTimer = nil;
+			
+			[self.layer addAnimation:[DDAnnotationView liftAndDropAnimation_] forKey:@"DDPinAnimation"];		
 			
 			// TODO: animation out-of-sync with self.layer
 			[UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
 			[UIView setAnimationDelegate:self];
-			[UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
+			[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop_:finished:context:)];
 			[UIView setAnimationDuration:0.1];
 			self.pinShadow.center = CGPointMake(90, -30);
 			self.pinShadow.center = CGPointMake(16.0, 19.5);
@@ -292,25 +288,25 @@
 			newCenter.y = self.center.y - self.centerOffset.y - self.image.size.height + 4.;
 			
 			DDAnnotation* theAnnotation = (DDAnnotation *)self.annotation;
-			CLLocationCoordinate2D newCoordinate = [_mapView convertPoint:newCenter toCoordinateFromView:self.superview];
+			CLLocationCoordinate2D newCoordinate = [self.mapView convertPoint:newCenter toCoordinateFromView:self.superview];
 			
 			[theAnnotation setCoordinate:newCoordinate];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"DDAnnotationCoordinateDidChangeNotification" object:theAnnotation];
 			
 			// Clean up the state information.
-			_startLocation = CGPointZero;
-			_originalCenter = CGPointZero;
-			_isMoving = NO;
+			self.startLocation = CGPointZero;
+			self.originalCenter = CGPointZero;
+			self.isMoving = NO;
 		} else {
 			
 			// TODO: Currently no drop down effect but pin bounce only 
-			[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
+			[self.layer addAnimation:[DDAnnotationView pinBounceAnimation_] forKey:@"DDPinAnimation"];
 			
 			// TODO: animation out-of-sync with self.layer
 			[UIView beginAnimations:@"DDShadowDropAnimation" context:NULL];
 			[UIView setAnimationDelegate:self];
-			[UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
+			[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop_:finished:context:)];
 			[UIView setAnimationDuration:0.2];
 			self.pinShadow.center = CGPointMake(16.0, 19.5);
 			self.pinShadow.alpha = 0;
@@ -318,39 +314,39 @@
 		}		
 	} else {
 		[super touchesEnded:touches withEvent:event];
-	}
+	}	
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-		
-    if (_mapView) {
+	
+	if (self.mapView) {
 		// TODO: Currently no drop down effect but pin bounce only 
-		[self.layer addAnimation:[DDAnnotationView _pinBounceAnimation] forKey:@"DDPinAnimation"];
+		[self.layer addAnimation:[DDAnnotationView pinBounceAnimation_] forKey:@"DDPinAnimation"];
 		
 		// TODO: animation out-of-sync with self.layer
 		[UIView beginAnimations:@"DDShadowDropAnimation" context:NULL];
 		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(_shadowDropDidStop:context:)];
+		[UIView setAnimationDidStopSelector:@selector(shadowDropDidStop_:finished:context:)];
 		[UIView setAnimationDuration:0.2];
 		self.pinShadow.center = CGPointMake(16.0, 19.5);
 		self.pinShadow.alpha = 0;
 		[UIView commitAnimations];		
 		
-		if (_isMoving) {
-            [self.pinTimer invalidate];
-            self.pinTimer = nil;
-
+		if (self.isMoving) {
+			[self.pinTimer invalidate];
+			self.pinTimer = nil;
+			
 			// Move the view back to its starting point.
-			self.center = _originalCenter;
+			self.center = self.originalCenter;
 			
 			// Clean up the state information.
-			_startLocation = CGPointZero;
-			_originalCenter = CGPointZero;
-			_isMoving = NO;			
+			self.startLocation = CGPointZero;
+			self.originalCenter = CGPointZero;
+			self.isMoving = NO;			
 		}		
-    } else {
-        [super touchesCancelled:touches withEvent:event];		
-	}	
+	} else {
+		[super touchesCancelled:touches withEvent:event];		
+	}
 }
 
 @end
