@@ -4,10 +4,10 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
 
 ## Features
 
-* Support both **iPhone OS 3.1.x and iOS 4** at the same time, in the same source code.
+* Support both **iPhone OS 3.1.x, 3.2 and iOS 4** at the same time, in the same source code.
 * Use iOS 4 MapKit built-in draggable support (Yes, you got **retina display** high resolution support for free!)
-* Use legacy MapKit techniques for creating iPhone OS 3.1.x draggable annotations.
-* Use **Core Animation** to create pin effects you saw in built-in Maps.app.
+* Use legacy MapKit techniques to create draggable annotations on iPhone OS 3.1.x and 3.2.
+* Use **Core Animation** to create pin effects you saw in built-in Maps.app on iPhone OS 3.1.x and 3.2.
 * Use **modern runtime**, **Objective-C 2.0 ABI**, and **LLVM 1.5 compiler** (Move on, babe! Don't look back!).
 
 ## Requirements
