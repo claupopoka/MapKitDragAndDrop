@@ -20,10 +20,7 @@
 - (void)viewDidLoad {
 
     [super viewDidLoad];
-	
-	// NOTE: This is optional, DDAnnotationCoordinateDidChangeNotification only fired in iPhone OS 3, not in iOS 4.
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(coordinateChanged_:) name:@"DDAnnotationCoordinateDidChangeNotification" object:nil];
-	
+		
 	CLLocationCoordinate2D theCoordinate;
 	theCoordinate.latitude = 37.810000;
     theCoordinate.longitude = -122.477989;
@@ -33,6 +30,22 @@
 	annotation.subtitle = [NSString	stringWithFormat:@"%f %f", annotation.coordinate.latitude, annotation.coordinate.longitude];
 	
 	[self.mapView addAnnotation:annotation];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	
+	[super viewWillAppear:animated];
+	
+	// NOTE: This is optional, DDAnnotationCoordinateDidChangeNotification only fired in iPhone OS 3, not in iOS 4.
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(coordinateChanged_:) name:@"DDAnnotationCoordinateDidChangeNotification" object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	
+	[super viewWillDisappear:animated];
+	
+	// NOTE: This is optional, DDAnnotationCoordinateDidChangeNotification only fired in iPhone OS 3, not in iOS 4.
+	[[NSNotificationCenter defaultCenter] removeObserver:self];	
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -48,9 +61,6 @@
 }
 
 - (void)dealloc {
-
-	// NOTE: This is optional, DDAnnotationCoordinateDidChangeNotification only fired in iPhone OS 3, not in iOS 4.
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	// NOTE: We're using modern runtime with synthesizing ivar by default, and we can't access ivar directly.
 	self.mapView = nil;
