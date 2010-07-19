@@ -22,7 +22,9 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
 
 ## Note
 
-<code>-Xclang</code> here means "pass argument to the static analyzer," and the argument is <code>-fobjc-nonfragile-abi2</code>. So you should add '**"-Xclang -fobjc-nonfragile-abi2"**' into $OTHER_CFLAGS as single argument that contains one space in between, and not add them as two arguments like '**-Xclang -fobjc-nonfragile-abi2**'.
+<code>-Xclang</code> here means "pass argument to the clang compiler," and the argument is <code>-fobjc-nonfragile-abi2</code>. So you should add '**"-Xclang -fobjc-nonfragile-abi2"**' into $OTHER_CFLAGS as single argument that contains one space in between, and not add them as two arguments like '**-Xclang -fobjc-nonfragile-abi2**'.
+
+For more details, check [Ò-Xclang -fobjc-nonfragile-abi2Ó is single flag with one argument][1].
 
 ## Screenshot
 
@@ -31,3 +33,5 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
 ## License 
 
 This sample code is licensed under MIT license.
+
+[1]:http://digdog.tumblr.com/post/833744044/xclang-fobjc-nonfragile-abi2-is-single-flag-with 
