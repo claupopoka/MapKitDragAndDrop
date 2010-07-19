@@ -16,9 +16,13 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
 * Project file (.xcodeproj) needs to:
 
   1. C/C++ Compiler Version (GCC_VERSION) set to "LLVM compiler 1.5"
-  2. Other C Flags (OTHER_CFLAGS) should add "-Xclang" and "-fobjc-nonfragile-abi2" flags
+  2. Other C Flags (OTHER_CFLAGS) should add "-Xclang -fobjc-nonfragile-abi2" flags. 
   3. Base SDK (SDKROOT) should be "iPhone Device 4.0"
   4. Deployment Target (IPHONEOS_DEPLOYMENT_TARGET) can be "iPhone OS 3.1" if you want.
+
+## Note
+
+<code>-Xclang</code> here means "pass <arg> to the static analyzer," and the <arg> is <code>-fobjc-nonfragile-abi2</code>. So you should add '**"-Xclang -fobjc-nonfragile-abi2"**' into $OTHER_CFLAGS as single argument that contains one space in between, and not add them as two arguments like '**-Xclang -fobjc-nonfragile-abi2**'.
 
 ## Screenshot
 
