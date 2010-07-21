@@ -265,7 +265,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CFLAGS = (
-					"\"-Xclang -fobjc-nonfragile-abi2\"",
+					"-Xclang",
+					"-fobjc-nonfragile-abi2",
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -284,7 +285,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CFLAGS = (
-					"\"-Xclang -fobjc-nonfragile-abi2\"",
+					"-Xclang",
+					"-fobjc-nonfragile-abi2",
 					"-DNS_BLOCK_ASSERTIONS=1",
 				);
 				PREBINDING = NO;
