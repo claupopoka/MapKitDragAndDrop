@@ -1,9 +1,9 @@
 //
 //  main.m
-//  Sample
+//  MapKitDragAndDrop
 //
-//  Created by digdog on 6/26/10.
-//  Copyright Ching-Lan 'digdog' HUANG and digdog software 2010. All rights reserved.
+//  Created by digdog on 11/1/10.
+//  Copyright 2010 Ching-Lan 'digdog' HUANG. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

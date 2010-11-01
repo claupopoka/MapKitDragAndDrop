@@ -1,26 +1,28 @@
 //
-//  MapViewController.m
-//  Sample
+//  MapKitDragAndDropViewController.m
+//  MapKitDragAndDrop
 //
-//  Created by digdog on 6/26/10.
-//  Copyright Ching-Lan 'digdog' HUANG and digdog software 2010. All rights reserved.
+//  Created by digdog on 11/1/10.
+//  Copyright 2010 Ching-Lan 'digdog' HUANG. All rights reserved.
 //
 
-#import "MapViewController.h"
+#import "MapKitDragAndDropViewController.h"
 #import "DDAnnotation.h"
 #import "DDAnnotationView.h"
 
-@interface MapViewController () 
+
+@interface MapKitDragAndDropViewController () 
 - (void)coordinateChanged_:(NSNotification *)notification;
 @end
 
+@implementation MapKitDragAndDropViewController
 
-@implementation MapViewController
+@synthesize mapView;
 
+// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
-
     [super viewDidLoad];
-		
+	
 	CLLocationCoordinate2D theCoordinate;
 	theCoordinate.latitude = 37.810000;
     theCoordinate.longitude = -122.477989;
@@ -29,7 +31,7 @@
 	annotation.title = @"Drag to Move Pin";
 	annotation.subtitle = [NSString	stringWithFormat:@"%f %f", annotation.coordinate.latitude, annotation.coordinate.longitude];
 	
-	[self.mapView addAnnotation:annotation];
+	[self.mapView addAnnotation:annotation];	
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -45,26 +47,32 @@
 	[super viewWillDisappear:animated];
 	
 	// NOTE: This is optional, DDAnnotationCoordinateDidChangeNotification only fired in iPhone OS 3, not in iOS 4.
-	[[NSNotificationCenter defaultCenter] removeObserver:self];	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DDAnnotationCoordinateDidChangeNotification" object:nil];	
 }
 
+// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
 - (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
+	// Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+	
+	// Release any cached data, images, etc that aren't in use.
 }
 
 - (void)viewDidUnload {
+	// Release any retained subviews of the main view.
+	// e.g. self.myOutlet = nil;
+	
+	self.mapView.delegate = nil;
 	self.mapView = nil;
 }
 
 - (void)dealloc {
-	
-	// NOTE: We're using modern runtime with synthesizing ivar by default, and we can't access ivar directly.
-	self.mapView = nil;
-	
+	mapView.delegate = nil;
+	[mapView release];
     [super dealloc];
 }
 
@@ -90,13 +98,13 @@
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
-
+	
     if ([annotation isKindOfClass:[MKUserLocation class]]) {
         return nil;		
 	}
 	
 	static NSString * const kPinAnnotationIdentifier = @"PinIdentifier";
-	MKAnnotationView *draggablePinView = [mapView dequeueReusableAnnotationViewWithIdentifier:kPinAnnotationIdentifier];
+	MKAnnotationView *draggablePinView = [self.mapView dequeueReusableAnnotationViewWithIdentifier:kPinAnnotationIdentifier];
 	
 	if (draggablePinView) {
 		draggablePinView.annotation = annotation;
@@ -104,9 +112,9 @@
 		draggablePinView = [[[DDAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kPinAnnotationIdentifier] autorelease];
 		
 		if ([draggablePinView isKindOfClass:[DDAnnotationView class]]) {
-			((DDAnnotationView *)draggablePinView).mapView = mapView;
+			((DDAnnotationView *)draggablePinView).mapView = self.mapView;
 		} else {
-			// NOTE: draggablePinView will be draggable enabled MKPinAnnotationView when running under iOS 4.
+			// NOTE: draggablePinView instance will be built-in draggable MKPinAnnotationView when running under iOS 4.
 		}
 	}		
 	

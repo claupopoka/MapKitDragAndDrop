@@ -1,6 +1,6 @@
 //
 //  DDAnnotationView.h
-//  MapKitDragAndDrop 3
+//  MapKitDragAndDrop 3.1
 //
 //  Created by digdog on 7/24/09.
 //  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
@@ -28,7 +28,15 @@
 #import <MapKit/MapKit.h>
 
 @interface DDAnnotationView : MKAnnotationView {
-
+	MKMapView *mapView_;
+	
+	@private
+	BOOL hasBuiltInDraggingSupport_;
+	BOOL isMoving_;
+	CGPoint startLocation_;
+	CGPoint originalCenter_;
+	UIImageView *pinShadow_;
+	NSTimer *pinTimer_;	
 }
 
 @property (nonatomic, assign) MKMapView *mapView;

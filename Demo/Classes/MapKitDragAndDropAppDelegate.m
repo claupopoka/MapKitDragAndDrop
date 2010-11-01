@@ -1,15 +1,19 @@
 //
-//  SampleAppDelegate.m
-//  Sample
+//  MapKitDragAndDropAppDelegate.m
+//  MapKitDragAndDrop
 //
-//  Created by digdog on 6/26/10.
-//  Copyright Ching-Lan 'digdog' HUANG and digdog software 2010. All rights reserved.
+//  Created by digdog on 11/1/10.
+//  Copyright 2010 Ching-Lan 'digdog' HUANG. All rights reserved.
 //
 
-#import "AppDelegate.h"
-#import "MapViewController.h"
+#import "MapKitDragAndDropAppDelegate.h"
+#import "MapKitDragAndDropViewController.h"
 
-@implementation AppDelegate
+@implementation MapKitDragAndDropAppDelegate
+
+@synthesize window;
+@synthesize viewController;
+
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -19,7 +23,7 @@
     // Override point for customization after application launch.
 
     // Add the view controller's view to the window and display.
-    [self.window addSubview:self.viewController.view];
+    [self.window addSubview:viewController.view];
     [self.window makeKeyAndVisible];
 
     return YES;
@@ -75,8 +79,8 @@
 
 
 - (void)dealloc {
-	self.viewController = nil;
-	self.window = nil;
+    [viewController release];
+    [window release];
     [super dealloc];
 }
 

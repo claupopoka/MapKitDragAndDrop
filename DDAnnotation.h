@@ -1,6 +1,6 @@
 //
 //  DDAnnotation.h
-//  MapKitDragAndDrop 3
+//  MapKitDragAndDrop 3.1
 //
 //  Created by digdog on 7/24/09.
 //  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
@@ -28,17 +28,12 @@
 #import <MapKit/MapKit.h>
 
 @interface DDAnnotation : MKPlacemark {
-
+	NSString *title_;
+	NSString *subtitle_;
 }
 
 // Re-declare MKAnnotation's readonly property 'coordinate' to readwrite. 
 @property (nonatomic, readwrite, assign) CLLocationCoordinate2D coordinate;
-
-// NOTE: Since @synthesize by default is done by the LLVM 1.5 compiler (with 
-// flag -Xclang and -fobjc-nonfragile-abi2), we don't need to create method
-// -setCoordinate: and its ivar anymore. Check out WWDC 2010 Videos, Session 
-// 144 - "Advanced Objective-C and Garbage Collection Techniques", for more
-// details.
 
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *subtitle;

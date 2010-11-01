@@ -1,4 +1,4 @@
-# MapKitDragAndDrop 3
+# MapKitDragAndDrop 3.1
 
 iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin lift/drop/bounce effects.
 
@@ -8,24 +8,19 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
 * Use iOS 4 MapKit built-in draggable support (Yes, you got **retina display** high resolution support for free!)
 * Use legacy MapKit techniques to create draggable annotations on iPhone OS 3.1.x and 3.2.
 * Use **Core Animation** to create pin effects you saw in built-in Maps.app on iPhone OS 3.1.x and 3.2.
-* Use **modern runtime**, **Objective-C 2.0 ABI**, and **LLVM 1.5 compiler** (Move on, babe! Don't look back!).
 
 ## Requirements
 
-* Xcode 3.2.3 with iOS 4 SDK or Xcode 4 Preview.
+* iOS SDK 4.2 or later.
 * Project file (.xcodeproj) needs to:
 
-  1. C/C++ Compiler Version (GCC_VERSION) set to "LLVM compiler 1.5"
-  2. Other C Flags (OTHER_CFLAGS) should add "-Xclang -fobjc-nonfragile-abi2" flags. 
-  3. Base SDK (SDKROOT) should be "iPhone Device 4.0"
-  4. Deployment Target (IPHONEOS_DEPLOYMENT_TARGET) can be "iPhone OS 3.1" if you want.
+  1. Base SDK (SDKROOT) should be "iPhone Device 4.2"
+  2. Deployment Target (IPHONEOS_DEPLOYMENT_TARGET) can be "iPhone OS 3.1" if you want.
 
 ## Note
 
-<code>-Xclang</code> here means "pass argument to the clang compiler," and the argument is <code>-fobjc-nonfragile-abi2</code>. So you should add "**-Xclang -fobjc-nonfragile-abi2**" into $OTHER_CFLAGS as single argument.
-
-For more details, check ["-Xclang -fobjc-nonfragile-abi2" is single flag with one argument][1].
-
+I previously enabled Objective-C 2.0 ABI (to use *synthesized by default* feature) in MapKitDragAndDrop 3.0, which cause a lot of headaches for many developers. After considering, I changed my mind, no more *synthesized by default* in this version, and you are allow to use either GCC or LLVM Compiler with it now.
+ 
 ## Screenshot
 
 ![](http://github.com/digdog/MapKitDragAndDrop/raw/master/Screenshots/DDAnnotationViewiPodTouch312.png)
@@ -33,5 +28,3 @@ For more details, check ["-Xclang -fobjc-nonfragile-abi2" is single flag with on
 ## License 
 
 This sample code is licensed under MIT license.
-
-[1]:http://digdog.tumblr.com/post/833744044/xclang-fobjc-nonfragile-abi2-is-single-flag-with 

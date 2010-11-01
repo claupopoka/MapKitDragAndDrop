@@ -1,6 +1,6 @@
 //
 //  DDAnnotationView.m
-//  MapKitDragAndDrop 3
+//  MapKitDragAndDrop 3.1
 //
 //  Created by digdog on 7/24/09.
 //  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
@@ -51,16 +51,20 @@
 
 @implementation DDAnnotationView
 
+@synthesize mapView = mapView_;
+@synthesize hasBuiltInDraggingSupport = hasBuiltInDraggingSupport_;
+@synthesize isMoving = isMoving_;
+@synthesize startLocation = startLocation_;
+@synthesize originalCenter = originalCenter_;
+@synthesize pinShadow = pinShadow_;
+@synthesize pinTimer = pinTimer_;
+
 - (void)dealloc {
 	
-	if (self.pinShadow) {
-		self.pinShadow = nil;		
-	}
+	[pinShadow_ release];
 	
-	if (self.pinTimer) {
-		[self.pinTimer invalidate];
-		self.pinTimer = nil;		
-	}
+	[pinTimer_ invalidate];
+	[pinTimer_ release];
 	
 	[super dealloc];
 }

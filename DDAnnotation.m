@@ -1,6 +1,6 @@
 //
 //  DDAnnotation.m
-//  MapKitDragAndDrop 3
+//  MapKitDragAndDrop 3.1
 //
 //  Created by digdog on 7/24/09.
 //  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
@@ -29,14 +29,8 @@
 
 @implementation DDAnnotation
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate addressDictionary:(NSDictionary *)addressDictionary {
-
-	if ((self = [super initWithCoordinate:coordinate addressDictionary:addressDictionary])) {
-		// NOTE: self.coordinate is now different from super.coordinate, since we re-declare this property in header, 
-		// self.coordinate and super.coordinate don't share same ivar anymore.
-		self.coordinate = coordinate;
-	}
-	return self;
-}
+@synthesize coordinate;
+@synthesize title = title_;
+@synthesize subtitle = subtitle_;
 
 @end
