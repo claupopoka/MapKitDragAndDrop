@@ -19,7 +19,7 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
 
 ## Note
 
-I previously enabled Objective-C 2.0 ABI (to use *synthesized by default* feature) in MapKitDragAndDrop 3.0, which cause a lot of headaches for many developers. After considering, I changed my mind, no more *synthesized by default* in this version, and you are allow to use either GCC or LLVM Compiler with it now.
+I previously enabled Objective-C 2.0 ABI (to use *synthesized by default* feature) in MapKitDragAndDrop 3.0, which cause a lot of headaches for many developers. After considering, I changed my mind, no more *synthesized by default* in this version, and you are allowed to use either GCC or LLVM Compiler with it now.
  
 ## Screenshot
 
