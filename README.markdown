@@ -27,4 +27,4 @@ I previously enabled Objective-C 2.0 ABI (to use *synthesized by default* featur
 
 ## License 
 
-This sample code is licensed under MIT license.
+This project is released under MIT License.

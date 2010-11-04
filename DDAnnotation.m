@@ -1,9 +1,9 @@
 //
 //  DDAnnotation.m
-//  MapKitDragAndDrop 3.1
+//  MapKitDragAndDrop 3.1 (Released under MIT License)
 //
 //  Created by digdog on 7/24/09.
-//  Copyright 2009-2010 Ching-Lan 'digdog' HUANG and digdog software.
+//  Copyright 2009-2010 Ching-Lan 'digdog' HUANG. http://digdog.tumblr.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the
