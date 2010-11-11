@@ -27,11 +27,10 @@
 
 #import <MapKit/MapKit.h>
 
-@interface DDAnnotationView : MKAnnotationView {
-	MKMapView *mapView_;
-	
+@interface DDAnnotationView : MKAnnotationView {	
 	@private
-	BOOL hasBuiltInDraggingSupport_;
+	MKMapView *mapView_;
+
 	BOOL isMoving_;
 	CGPoint startLocation_;
 	CGPoint originalCenter_;
@@ -39,6 +38,7 @@
 	NSTimer *pinTimer_;	
 }
 
-@property (nonatomic, assign) MKMapView *mapView;
+// Please use this class method to create DDAnnotationView (on iOS 3) or built-in draggble MKPinAnnotationView (on iOS 4).
++ (id)annotationViewWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier mapView:(MKMapView *)mapView;
 
 @end

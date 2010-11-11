@@ -108,13 +108,14 @@
 	
 	if (draggablePinView) {
 		draggablePinView.annotation = annotation;
-	} else {		
-		draggablePinView = [[[DDAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kPinAnnotationIdentifier] autorelease];
-		
+	} else {
+		// Use class method to create DDAnnotationView (on iOS 3) or built-in draggble MKPinAnnotationView (on iOS 4).
+		draggablePinView = [DDAnnotationView annotationViewWithAnnotation:annotation reuseIdentifier:kPinAnnotationIdentifier mapView:self.mapView];
+				
 		if ([draggablePinView isKindOfClass:[DDAnnotationView class]]) {
-			((DDAnnotationView *)draggablePinView).mapView = self.mapView;
+			// draggablePinView is DDAnnotationView on iOS 3.
 		} else {
-			// NOTE: draggablePinView instance will be built-in draggable MKPinAnnotationView when running under iOS 4.
+			// draggablePinView instance will be built-in draggable MKPinAnnotationView when running on iOS 4.
 		}
 	}		
 	

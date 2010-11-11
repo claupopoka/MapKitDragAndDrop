@@ -30,20 +30,20 @@
 #import <QuartzCore/QuartzCore.h> // For CAAnimation
 
 @interface DDAnnotationView () 
-@property (nonatomic, assign) BOOL hasBuiltInDraggingSupport;
-
 @property (nonatomic, assign) BOOL isMoving;
 @property (nonatomic, assign) CGPoint startLocation;
 @property (nonatomic, assign) CGPoint originalCenter;
 
 @property (nonatomic, retain) UIImageView *	pinShadow;
 @property (nonatomic, retain) NSTimer * pinTimer;
+@property (nonatomic, assign) MKMapView *mapView;
 
 + (CAAnimation *)pinBounceAnimation_;
 + (CAAnimation *)pinFloatingAnimation_;
 + (CAAnimation *)pinLiftAnimation_;
 + (CAAnimation *)liftForDraggingAnimation_; // Used in touchesBegan:
 + (CAAnimation *)liftAndDropAnimation_;		// Used in touchesEnded: when touchesMoved: previous triggered
+- (id)initWithAnnotation_:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier mapView:(MKMapView *)mapView;
 - (void)shadowLiftWillStart_:(NSString *)animationID context:(void *)context;
 - (void)shadowDropDidStop_:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 - (void)resetPinPosition_:(NSTimer *)timer;
@@ -52,7 +52,6 @@
 @implementation DDAnnotationView
 
 @synthesize mapView = mapView_;
-@synthesize hasBuiltInDraggingSupport = hasBuiltInDraggingSupport_;
 @synthesize isMoving = isMoving_;
 @synthesize startLocation = startLocation_;
 @synthesize originalCenter = originalCenter_;
@@ -69,29 +68,35 @@
 	[super dealloc];
 }
 
-- (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier {
+// Thanks to Bret Cheng (@bretcheng)'s suggestion on avoiding memory leaks in -initWithAnnotation:reuseIdentifier: when returning MKPinAnnotationView instead
++ (id)annotationViewWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier mapView:(MKMapView *)mapView {
 	
 	// iOS 3.2 will respond to isDraggable property, so use systemVersion to do the check. Thanks to Erich Wood (@erichwood) for the report.
-	self.hasBuiltInDraggingSupport = ([[[UIDevice currentDevice] systemVersion] compare:@"4.0" options:NSNumericSearch] != NSOrderedAscending);
-
-	if (self.hasBuiltInDraggingSupport) {
-		if ((self = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])) {
-			[self performSelector:NSSelectorFromString(@"setDraggable:") withObject:[NSNumber numberWithBool:YES]];
-		}
-	} else {
-		if ((self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])) {
-			self.image = [UIImage imageNamed:@"Pin.png"];
-			self.centerOffset = CGPointMake(8, -14);
-			self.calloutOffset = CGPointMake(-8, 0);
-			
-			self.pinShadow = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PinShadow.png"]] autorelease];
-			self.pinShadow.frame = CGRectMake(0, 0, 32, 39);
-			self.pinShadow.hidden = YES;
-			[self addSubview:self.pinShadow];
-		}
-	}
+	BOOL draggingSupport = ([[[UIDevice currentDevice] systemVersion] compare:@"4.0" options:NSNumericSearch] != NSOrderedAscending);
 	
-	self.canShowCallout = YES;
+	if (draggingSupport) {
+		MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+		[annotationView performSelector:NSSelectorFromString(@"setDraggable:") withObject:[NSNumber numberWithBool:YES]];
+		annotationView.canShowCallout = YES;
+		return [annotationView autorelease];
+	} 
+	
+	return [[[self alloc] initWithAnnotation_:annotation reuseIdentifier:reuseIdentifier mapView:mapView] autorelease];
+}
+
+- (id)initWithAnnotation_:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier mapView:(MKMapView *)mapView {
+		
+	if ((self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])) {
+		self.image = [UIImage imageNamed:@"Pin.png"];
+		self.centerOffset = CGPointMake(8, -14);
+		self.calloutOffset = CGPointMake(-8, 0);
+		self.canShowCallout = YES;
+		
+		self.pinShadow = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PinShadow.png"]] autorelease];
+		self.pinShadow.frame = CGRectMake(0, 0, 32, 39);
+		self.pinShadow.hidden = YES;
+		[self addSubview:self.pinShadow];
+	}
 	
 	return self;
 }
