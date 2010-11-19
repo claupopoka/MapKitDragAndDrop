@@ -1,4 +1,4 @@
-﻿# MapKitDragAndDrop 3.2
+# MapKitDragAndDrop 3.2
 
 iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin lift/drop/bounce effects.
 
