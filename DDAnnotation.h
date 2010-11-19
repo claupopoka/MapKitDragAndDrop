@@ -28,6 +28,7 @@
 #import <MapKit/MapKit.h>
 
 @interface DDAnnotation : MKPlacemark {
+	CLLocationCoordinate2D coordinate_;
 	NSString *title_;
 	NSString *subtitle_;
 }
