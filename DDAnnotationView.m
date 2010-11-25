@@ -197,7 +197,7 @@
     // TODO: animation out-of-sync with self.layer
     [UIView beginAnimations:@"DDShadowLiftDropAnimation" context:NULL];
     [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(shadowDropDidStop_:context:)];
+    [UIView setAnimationDidStopSelector:@selector(shadowDropDidStop_:finished:context:)];
     [UIView setAnimationDuration:0.1];
     self.pinShadow.center = CGPointMake(90, -30);
     self.pinShadow.center = CGPointMake(16.0, 19.5);
