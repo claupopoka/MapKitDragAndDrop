@@ -25,7 +25,7 @@ iOS/iPhone OS MapKit sample for draggable AnnotationView with CoreAnimation pin 
  
 ## Screenshot
 
-![](http://github.com/digdog/MapKitDragAndDrop/raw/master/Screenshots/DDAnnotationViewiPodTouch312.png)
+![](https://github.com/digdog/MapKitDragAndDrop/raw/master/Screenshots/DDAnnotationViewiPodTouch312.png)
 
 ## License 
 
